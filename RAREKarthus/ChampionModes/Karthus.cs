@@ -427,7 +427,6 @@ namespace RAREKarthus.ChampionModes
                 drawMenu.Bool("Q", "Draws Q");
                 drawMenu.Bool("W", "Draws W");
                 drawMenu.Bool("E", "Draws E");
-                drawMenu.Bool("Farm", "Draw Farm-Focus");
             }
         }
     }
