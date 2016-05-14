@@ -98,7 +98,7 @@ namespace RAREKarthus.ChampionModes
         private static void Game_OnUpdate(EventArgs args)
         {
             //checking if UltKS is enabled.
-            if (Utilities.MainMenu["R"]["KS"])
+            if (Utilities.MainMenu["R"]["KS"] && Variables.Orbwalker.GetActiveMode() != OrbwalkingMode.Combo)
                 //start ultks method
                 AutoUlt();
 
@@ -110,8 +110,8 @@ namespace RAREKarthus.ChampionModes
                          t.IsValidTarget() && Utilities.R.GetDamage(t) > t.Health &&
                          t.Distance(ObjectManager.Player.Position) > Utilities.Q.Range))
                 {
-
-                    Game.ShowPing(PingCategory.Fallback, enemy);
+                    Game.ShowPing(PingCategory.Danger, enemy);
+                    //internal pings :D
                 }
 
             if (Core.IsInPassiveForm())
