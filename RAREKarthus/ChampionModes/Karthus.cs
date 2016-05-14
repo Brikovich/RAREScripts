@@ -98,7 +98,7 @@ namespace RAREKarthus.ChampionModes
         private static void Game_OnUpdate(EventArgs args)
         {
             //checking if UltKS is enabled.
-            if (Utilities.MainMenu["R"]["KS"] && GameObjects.EnemyHeroes.Count( x => Utilities.Player.Distance(x) <= 500f ) > 0)
+            if (GameObjects.EnemyHeroes.Count( x => Utilities.Player.Distance(x) <= 500f ) > 0 && (Utilities.MainMenu["R"]["KS"] || Utilities.MainMenu["R"]["Save"]))
                 //start ultks method
                 AutoUlt();
 
@@ -196,8 +196,18 @@ namespace RAREKarthus.ChampionModes
         /// </summary>
         private static void AutoUlt()
         {
-            var count = GameObjects.EnemyHeroes.Count(champ => champ.Health < Utilities.R.GetDamage(champ)*0.20 /*&& champ.CountEnemyHeroesInRange(250f) == 0*/);
+            int count = 0;
 
+            if (Utilities.MainMenu["R"]["KS"])
+            {
+                count = GameObjects.EnemyHeroes.Count(champ => champ.Health < Utilities.R.GetDamage(champ)*0.20);
+            }
+            else if (Utilities.MainMenu["R"]["Save"])
+            {
+                count = GameObjects.EnemyHeroes.Count(champ => champ.Health < Utilities.R.GetDamage(champ) * 0.20
+                    && champ.CountEnemyHeroesInRange(250f) == 0);
+            }
+            
             if (count >= Utilities.MainMenu["R"]["CountKS"])
             {
                 Utilities.R.Cast();
@@ -399,7 +409,8 @@ namespace RAREKarthus.ChampionModes
                 rMenu.Separator("Combo");
                 rMenu.Bool("ComboR", "Use R");
                 rMenu.Separator("Others");
-                rMenu.Bool("KS", "Auto KS kill/save on low life");
+                rMenu.Bool("KS", "Auto KSing kills");
+                rMenu.Bool("Save", "Auto saving kills");
                 rMenu.Slider("CountKS", "At how many champs KS-Ult", 1, 1, 5);
             }
 
