@@ -14,15 +14,15 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using RAREKarthus.Additions;
 using LeagueSharp;
 using LeagueSharp.SDK;
 using LeagueSharp.SDK.Core.UI.IMenu;
 using LeagueSharp.SDK.Core.Utils;
+using RAREZyra.Additions;
 
 #endregion
 
-namespace RAREKarthus.ChampionModes
+namespace RAREZyra.ChampionModes
 {
     internal class Karthus
     {
@@ -53,6 +53,8 @@ namespace RAREKarthus.ChampionModes
 
             // init the menu for karthus, maybe more champs soon.
             ChampionMenu();
+
+            Utilities.targetSelector = new TargetSelector(Utilities.MainMenu);
 
             //game update events - combo etc.
             Game.OnUpdate += Game_OnUpdate;

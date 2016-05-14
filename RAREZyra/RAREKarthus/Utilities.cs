@@ -17,20 +17,17 @@ using System.Text.RegularExpressions;
 using LeagueSharp;
 using LeagueSharp.SDK;
 using LeagueSharp.SDK.Core.UI.IMenu;
-using LeagueSharp.SDK.Core.Utils;
-using SharpDX;
-using SPrediction;
 
 #endregion
 
-namespace RAREKarthus
+namespace RAREZyra
 {
     internal class Utilities
     {
         
         internal static Menu MainMenu;
         internal static Obj_AI_Hero Player;
-        internal static TargetSelector targetSelector = Variables.TargetSelector;
+        internal static TargetSelector targetSelector;
         internal static Spell Q, W, E, R;
         internal static SpellSlot Flash, Ignite;
         internal const int FlashRange = 425, IgniteRange = 600;
