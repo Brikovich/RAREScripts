@@ -161,33 +161,35 @@ namespace RAREKarthus.ChampionModes
         /// <param name="tx">Only necessary if you are in the combo mode.</param>
         private static void EState(OrbwalkingMode mymode, IEnumerable<Obj_AI_Base> ty = null, Obj_AI_Hero tx = null)
         {
-            if (mymode == OrbwalkingMode.LaneClear)
+            switch (mymode)
             {
-                if (ty != null && ty.Count(x =>
-                    x.Health < Utilities.E.GetDamage(x)*3 &&
-                    x.IsValidTarget(Utilities.E.Range)) > 1)
-                {
-                    Utilities.E.Cast();
-                }
-                else
-                {
+                case OrbwalkingMode.LaneClear:
+                    if (ty != null && ty.Count(x =>
+                        x.Health < Utilities.E.GetDamage(x)*3 &&
+                        x.IsValidTarget(Utilities.E.Range)) > 1)
+                    {
+                        Utilities.E.Cast();
+                    }
+                    else
+                    {
+                        if (Utilities.Player.HasBuff("KarthusDefile")) Utilities.E.Cast();
+                    }
+                    break;
+
+                case OrbwalkingMode.Combo:
+                    if (tx != null && tx.IsValidTarget(Utilities.E.Range))
+                    {
+                        Utilities.E.Cast();
+                    }
+                    else
+                    {
+                        if (Utilities.Player.HasBuff("KarthusDefile")) Utilities.E.Cast();
+                    }
+                    break;
+
+                default:
                     if (Utilities.Player.HasBuff("KarthusDefile")) Utilities.E.Cast();
-                }
-            }
-            else if (mymode == OrbwalkingMode.Combo)
-            {
-                if (tx != null && tx.IsValidTarget(Utilities.E.Range))
-                {
-                    Utilities.E.Cast();
-                }
-                else
-                {
-                    if (Utilities.Player.HasBuff("KarthusDefile")) Utilities.E.Cast();
-                }
-            }
-            else
-            {
-                if (Utilities.Player.HasBuff("KarthusDefile")) Utilities.E.Cast();
+                    break;
             }
         }
 
@@ -200,12 +202,12 @@ namespace RAREKarthus.ChampionModes
 
             if (Utilities.MainMenu["R"]["KS"])
             {
-                count = GameObjects.EnemyHeroes.Count(champ => champ.Health < Utilities.R.GetDamage(champ)*0.20);
+                count = GameObjects.EnemyHeroes.Count(champ => champ.Health < Utilities.R.GetDamage(champ)*0.20 && !champ.HasBuffOfType(BuffType.SpellShield));
             }
             else if (Utilities.MainMenu["R"]["Save"])
             {
                 count = GameObjects.EnemyHeroes.Count(champ => champ.Health < Utilities.R.GetDamage(champ) * 0.20
-                    && champ.CountEnemyHeroesInRange(250f) == 0);
+                    && champ.CountEnemyHeroesInRange(250f) == 0 && !champ.HasBuffOfType(BuffType.SpellShield));
             }
             
             if (count >= Utilities.MainMenu["R"]["CountKS"])
