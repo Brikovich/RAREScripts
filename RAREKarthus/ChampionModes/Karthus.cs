@@ -98,7 +98,7 @@ namespace RAREKarthus.ChampionModes
         private static void Game_OnUpdate(EventArgs args)
         {
             //checking if UltKS is enabled.
-            if (Utilities.MainMenu["R"]["KS"] && Variables.Orbwalker.GetActiveMode() != OrbwalkingMode.Combo)
+            if (Utilities.MainMenu["R"]["KS"] && GameObjects.EnemyHeroes.Count( x => Utilities.Player.Distance(x) <= 500f ) > 0)
                 //start ultks method
                 AutoUlt();
 
@@ -196,7 +196,7 @@ namespace RAREKarthus.ChampionModes
         /// </summary>
         private static void AutoUlt()
         {
-            var count = GameObjects.EnemyHeroes.Count(champ => champ.Health < Utilities.R.GetDamage(champ)*0.20);
+            var count = GameObjects.EnemyHeroes.Count(champ => champ.Health < Utilities.R.GetDamage(champ)*0.20 /*&& champ.CountEnemyHeroesInRange(250f) == 0*/);
 
             if (count >= Utilities.MainMenu["R"]["CountKS"])
             {
