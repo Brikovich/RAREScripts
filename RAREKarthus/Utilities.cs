@@ -17,6 +17,9 @@ using System.Text.RegularExpressions;
 using LeagueSharp;
 using LeagueSharp.SDK;
 using LeagueSharp.SDK.Core.UI.IMenu;
+using LeagueSharp.SDK.Core.Utils;
+using SharpDX;
+using SPrediction;
 
 #endregion
 
@@ -24,18 +27,26 @@ namespace RAREKarthus
 {
     internal class Utilities
     {
-
+        
         internal static Menu MainMenu;
         internal static Obj_AI_Hero Player;
+        internal static TargetSelector targetSelector;
         internal static Spell Q, W, E, R;
         internal static SpellSlot Flash, Ignite;
         internal const int FlashRange = 425, IgniteRange = 600;
 
+        /// <summary>
+        /// Prints your text into the chat.
+        /// </summary>
+        /// <param name="text">Used to give out the information as string</param>
         public static void PrintChat(string text)
         {
-            Game.PrintChat("rareKarthus => {0}", text);
+            Game.PrintChat("kAIO => {0}", text);
         }
 
+        /// <summary>
+        /// checks if there is an update for this assembly
+        /// </summary>
         public static void UpdateCheck()
         {
             try
@@ -72,6 +83,9 @@ namespace RAREKarthus
             }
         }
 
+        /// <summary>
+        /// initialize the MainMenu for the Champion Menu. Should be called at first.
+        /// </summary>
         public static void InitMenu()
         {
             MainMenu = new Menu("rarekarthus", "rareKarthus", true, Player.ChampionName).Attach();

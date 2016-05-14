@@ -20,6 +20,7 @@ namespace RAREKarthus
 {
     internal class Program
     {
+
         private static void Main(string[] args)
         {
             Events.OnLoad += Events_OnLoad;
@@ -28,17 +29,16 @@ namespace RAREKarthus
         private static void Events_OnLoad(object sender, EventArgs e)
         {
             Utilities.Player = GameObjects.Player;
-
-            if (Utilities.Player.CharData.BaseSkinName != "Karthus")
-            {
-                Utilities.PrintChat("invalid Champion detected.");
-                return;
-            }
-
             Utilities.InitMenu();
             Utilities.UpdateCheck();
 
-            Karthus.Init();
+            if (Utilities.Player.CharData.BaseSkinName == "Karthus")
+            {
+                var champion = new Karthus();
+                champion.Init();
+                Utilities.PrintChat("Karthus Initialized.");
+            }
+            
         }
     }
 }

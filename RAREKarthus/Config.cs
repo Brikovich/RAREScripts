@@ -26,7 +26,14 @@ namespace RAREKarthus
         #endregion
 
         #region Public Methods and Operators
-
+        /// <summary>
+        /// lets you create a new menupoint inside a <seealso cref="Menu"/>.
+        /// </summary>
+        /// <param name="subMenu">Your SubMenu to add it to</param>
+        /// <param name="name">the so called ID</param>
+        /// <param name="display">The displayed name inside the game</param>
+        /// <param name="state">the default state of the menu</param>
+        /// <returns>returns a <seealso cref="MenuBool"/> the can be used.</returns>
         public static MenuBool Bool(this Menu subMenu, string name, string display, bool state = true)
         {
             return subMenu.Add(new MenuBool(name, display, state));
