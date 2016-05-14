@@ -84,7 +84,7 @@ namespace RAREZyra.ChampionModes
         private static void Game_OnUpdate(EventArgs args)
         {
             //checking if UltKS is enabled.
-            if (GameObjects.EnemyHeroes.Count( x => Extensions.Distance((Obj_AI_Base) Utilities.Player, (Obj_AI_Base) x) <= 500f ) > 0 && (Utilities.MainMenu["R"]["KS"] || Utilities.MainMenu["R"]["Save"]))
+            if (GameObjects.EnemyHeroes.Count( x => Utilities.Player.Distance(x) <= 500f ) > 0 && (Utilities.MainMenu["R"]["KS"] || Utilities.MainMenu["R"]["Save"]))
                 //start ultks method
                 AutoUlt();
 
