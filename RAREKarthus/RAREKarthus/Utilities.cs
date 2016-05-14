@@ -41,7 +41,7 @@ namespace RAREKarthus
         /// <param name="text">Used to give out the information as string</param>
         public static void PrintChat(string text)
         {
-            Game.PrintChat("kAIO => {0}", text);
+            Game.PrintChat("RAREKarthus => {0}", text);
         }
 
         /// <summary>

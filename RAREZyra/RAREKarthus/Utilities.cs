@@ -27,7 +27,7 @@ namespace RAREZyra
         
         internal static Menu MainMenu;
         internal static Obj_AI_Hero Player;
-        internal static TargetSelector targetSelector;
+        internal static TargetSelector targetSelector = Variables.TargetSelector;
         internal static Spell Q, W, E, R;
         internal static SpellSlot Flash, Ignite;
         internal const int FlashRange = 425, IgniteRange = 600;
@@ -38,7 +38,7 @@ namespace RAREZyra
         /// <param name="text">Used to give out the information as string</param>
         public static void PrintChat(string text)
         {
-            Game.PrintChat("kAIO => {0}", text);
+            Game.PrintChat("RAREZyra => {0}", text);
         }
 
         /// <summary>

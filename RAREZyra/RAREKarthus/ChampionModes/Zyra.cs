@@ -1,15 +1,3 @@
-﻿#region copyright
-
-// Copyright (c) KyonLeague 2016
-// If you want to copy parts of the code, please inform the author and give appropiate credits
-// File: Karthus.cs
-// Author: KyonLeague
-// Contact: "cryz3rx" on Skype 
-
-#endregion
-
-#region usage
-
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -20,11 +8,9 @@ using LeagueSharp.SDK.Core.UI.IMenu;
 using LeagueSharp.SDK.Core.Utils;
 using RAREZyra.Additions;
 
-#endregion
-
 namespace RAREZyra.ChampionModes
 {
-    internal class Karthus
+    internal class Zyra
     {
         /// <summary>
         ///     Initialization for Karthus.
@@ -98,7 +84,7 @@ namespace RAREZyra.ChampionModes
         private static void Game_OnUpdate(EventArgs args)
         {
             //checking if UltKS is enabled.
-            if (GameObjects.EnemyHeroes.Count( x => Utilities.Player.Distance(x) <= 500f ) > 0 && (Utilities.MainMenu["R"]["KS"] || Utilities.MainMenu["R"]["Save"]))
+            if (GameObjects.EnemyHeroes.Count( x => Extensions.Distance((Obj_AI_Base) Utilities.Player, (Obj_AI_Base) x) <= 500f ) > 0 && (Utilities.MainMenu["R"]["KS"] || Utilities.MainMenu["R"]["Save"]))
                 //start ultks method
                 AutoUlt();
 
@@ -207,7 +193,7 @@ namespace RAREZyra.ChampionModes
             else if (Utilities.MainMenu["R"]["Save"])
             {
                 count = GameObjects.EnemyHeroes.Count(champ => champ.Health < Utilities.R.GetDamage(champ) * 0.20
-                    && champ.CountEnemyHeroesInRange(250f) == 0 && !champ.HasBuffOfType(BuffType.SpellShield));
+                                                               && champ.CountEnemyHeroesInRange(250f) == 0 && !champ.HasBuffOfType(BuffType.SpellShield));
             }
             
             if (count >= Utilities.MainMenu["R"]["CountKS"])
@@ -455,20 +441,20 @@ namespace RAREZyra.ChampionModes
         /// <returns> returns your damage in double</returns>
         public static double GetQDamage(Obj_AI_Base t)
         {
-            var minions = GameObjects.EnemyMinions.Where(x => t.Distance(x.Position) <= Utilities.Q.Width/2);
-            var damagetwo = new[] {40, 60, 80, 100, 120};
-            var damageone = new[] {80, 120, 160, 200, 240};
+            var minions = GameObjects.EnemyMinions.Where(x => t.Distance(x.Position) <= Utilities.Q.Width / 2);
+            var damagetwo = new[] { 40, 60, 80, 100, 120 };
+            var damageone = new[] { 80, 120, 160, 200, 240 };
 
             var objAiMinions = minions as Obj_AI_Minion[] ?? minions.ToArray();
 
             if (objAiMinions.Any() && Utilities.Q.Level >= 1)
             {
-                return damagetwo[Utilities.Q.Level - 1] + 0.3*Utilities.Player.FlatMagicDamageMod;
+                return damagetwo[Utilities.Q.Level - 1] + 0.3 * Utilities.Player.FlatMagicDamageMod;
             }
 
             if (Utilities.Q.Level >= 1)
             {
-                return damageone[Utilities.Q.Level - 1] + 0.6*Utilities.Player.FlatMagicDamageMod;
+                return damageone[Utilities.Q.Level - 1] + 0.6 * Utilities.Player.FlatMagicDamageMod;
             }
 
             return 0.0;
@@ -495,7 +481,7 @@ namespace RAREZyra.ChampionModes
         /// <returns>returns your percentage in float</returns>
         public static float GetManaPercent()
         {
-            return Utilities.Player.Mana/Utilities.Player.MaxMana*100f;
+            return Utilities.Player.Mana / Utilities.Player.MaxMana * 100f;
         }
 
         /// <summary>

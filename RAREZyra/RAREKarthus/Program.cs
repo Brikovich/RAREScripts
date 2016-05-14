@@ -31,11 +31,11 @@ namespace RAREZyra
             Utilities.InitMenu();
             Utilities.UpdateCheck();
 
-            if (Utilities.Player.CharData.BaseSkinName == "Karthus")
+            if (Utilities.Player.CharData.BaseSkinName == "Zyra")
             {
-                var champion = new Karthus();
+                var champion = new Zyra();
                 champion.Init();
-                Utilities.PrintChat("Karthus Initialized.");
+                Utilities.PrintChat("Zyra Initialized.");
             }
         }
     }
