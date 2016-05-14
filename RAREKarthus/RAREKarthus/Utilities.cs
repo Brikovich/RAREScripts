@@ -19,7 +19,6 @@ using LeagueSharp.SDK;
 using LeagueSharp.SDK.Core.UI.IMenu;
 using LeagueSharp.SDK.Core.Utils;
 using SharpDX;
-using SPrediction;
 
 #endregion
 
