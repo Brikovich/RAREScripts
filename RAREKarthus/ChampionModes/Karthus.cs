@@ -110,6 +110,7 @@ namespace RAREKarthus.ChampionModes
                          t.IsValidTarget() && Utilities.R.GetDamage(t) > t.Health &&
                          t.Distance(ObjectManager.Player.Position) > Utilities.Q.Range))
                 {
+
                     Game.ShowPing(PingCategory.Fallback, enemy);
                 }
 
@@ -195,12 +196,11 @@ namespace RAREKarthus.ChampionModes
         /// </summary>
         private static void AutoUlt()
         {
-            foreach (var champ in GameObjects.EnemyHeroes)
+            var count = GameObjects.EnemyHeroes.Count(champ => champ.Health < Utilities.R.GetDamage(champ)*0.20);
+
+            if (count >= Utilities.MainMenu["R"]["CountKS"])
             {
-                if (champ.Health < Utilities.R.GetDamage(champ)*0.20 && Utilities.MainMenu["R"]["KS"])
-                {
-                    Utilities.R.Cast();
-                }
+                Utilities.R.Cast();
             }
         }
 
@@ -400,6 +400,7 @@ namespace RAREKarthus.ChampionModes
                 rMenu.Bool("ComboR", "Use R");
                 rMenu.Separator("Others");
                 rMenu.Bool("KS", "Auto KS kill/save on low life");
+                rMenu.Slider("CountKS", "At how many champs KS-Ult", 1, 1, 5);
             }
 
             var comboMenu = Utilities.MainMenu.Add(new Menu("Utilities", "Utilities"));
