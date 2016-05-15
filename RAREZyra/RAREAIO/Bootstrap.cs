@@ -14,6 +14,8 @@ namespace RAREAIO
 
         public static Menu wardmenu, telemenu, DamageMenu, WayMenu, CloneMenu, ClockMenu, SpellMenu, AutoMenu, GameMenu, JungleMenu, Trinket, LevelMenu, CSMenu;
 
+        internal static Clocktime clock = new Clocktime();
+
         public static void MainInit()
         {
 
@@ -30,7 +32,6 @@ namespace RAREAIO
             // Clone
 
             // clocktime
-            var clock = new Clocktime();
             clock.Init();
 
             // spelltracker (incl. summoners) Cooldowns
@@ -47,6 +48,20 @@ namespace RAREAIO
 
             // CSCounter
 
+
+            Game.OnUpdate += Game_OnUpdate;
+        }
+
+        private static void Game_OnUpdate(EventArgs args)
+        {
+            if (!Utilities.MainMenu["CLOCK"]["ON"] && clock.IsRunning)
+            {
+                clock.Disable();
+            }
+            else if(Utilities.MainMenu["CLOCK"]["ON"] && !clock.IsRunning)
+            {
+                clock.Enable();
+            }
         }
 
         public static void MeunInit()
@@ -78,7 +93,7 @@ namespace RAREAIO
 
             ClockMenu = Utilities.MainMenu.Add(new Menu("CLOCK", "Clock"));
             {
-                ClockMenu.Separator("Hi");
+                ClockMenu.Bool("ON", "Turn on", false);
             }
 
             SpellMenu = Utilities.MainMenu.Add(new Menu("SPELL", "SpellTracker"));

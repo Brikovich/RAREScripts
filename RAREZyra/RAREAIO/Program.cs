@@ -21,6 +21,7 @@ namespace RAREAIO
     {
         private static void Main(string[] args)
         {
+            LeagueSharp.SDK.Bootstrap.Init();
             Events.OnLoad += Events_OnLoad;
         }
 
@@ -28,7 +29,7 @@ namespace RAREAIO
         {
             Utilities.Player = GameObjects.Player;
             Utilities.InitMenu();
-            Utilities.UpdateCheck();
+            //Utilities.UpdateCheck();
             
             Bootstrap.MainInit();
 
