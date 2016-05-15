@@ -17,8 +17,9 @@ using System.Linq;
 using RAREKarthus.Additions;
 using LeagueSharp;
 using LeagueSharp.SDK;
-using LeagueSharp.SDK.Core.UI.IMenu;
-using LeagueSharp.SDK.Core.Utils;
+using LeagueSharp.SDK.Enumerations;
+using LeagueSharp.SDK.UI;
+using LeagueSharp.SDK.Utils;
 
 #endregion
 

@@ -16,8 +16,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using LeagueSharp;
 using LeagueSharp.SDK;
-using LeagueSharp.SDK.Core.UI.IMenu;
-using LeagueSharp.SDK.Core.Utils;
+using LeagueSharp.SDK.UI;
 using SharpDX;
 
 #endregion
@@ -87,7 +86,7 @@ namespace RAREKarthus
         /// </summary>
         public static void InitMenu()
         {
-            MainMenu = new Menu("rarekarthus", "rareKarthus", true, Player.ChampionName).Attach();
+            MainMenu = new Menu("rarekarthus", "rareKarthus", true, Player.ChampionName);
             MainMenu.Separator("We love LeagueSharp.");
             MainMenu.Separator("Developer: @Kyon");
         }

@@ -10,8 +10,7 @@
 
 #region usage
 
-using LeagueSharp.SDK.Core.UI.IMenu;
-using LeagueSharp.SDK.Core.UI.IMenu.Values;
+using LeagueSharp.SDK.UI;
 
 #endregion
 

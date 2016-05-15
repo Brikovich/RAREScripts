@@ -4,7 +4,6 @@ using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 using LeagueSharp.SDK;
-using LeagueSharp.SDK.Core.Wrappers.Damages;
 
 // BIG THANKS TO SEBBY FOR SHARING HIS CODE <3
 namespace RAREKarthus.Additions
