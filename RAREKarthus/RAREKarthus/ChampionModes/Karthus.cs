@@ -96,8 +96,9 @@ namespace RAREKarthus.ChampionModes
         /// <param name="args">parameter that are given by the process itself. (not needed yet)</param>
         private static void Game_OnUpdate(EventArgs args)
         {
+
             //checking if UltKS is enabled.
-            if (GameObjects.EnemyHeroes.Count( x => Utilities.Player.Distance(x) <= 500f ) > 0 && (Utilities.MainMenu["R"]["KS"] || Utilities.MainMenu["R"]["Save"]))
+            if (GameObjects.EnemyHeroes.Count( x => Utilities.Player.Distance(x) <= 500f ) <= 0 && (Utilities.MainMenu["R"]["KS"] || Utilities.MainMenu["R"]["Save"]))
                 //start ultks method
                 AutoUlt();
 
@@ -160,14 +161,20 @@ namespace RAREKarthus.ChampionModes
         /// <param name="tx">Only necessary if you are in the combo mode.</param>
         private static void EState(OrbwalkingMode mymode, IEnumerable<Obj_AI_Base> ty = null, Obj_AI_Hero tx = null)
         {
+
+            if (!Utilities.E.IsReady() || Core.IsInPassiveForm() ||
+                ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).ToggleState != 2)
+                return;
+
             switch (mymode)
             {
                 case OrbwalkingMode.LaneClear:
-                    if (ty != null && ty.Count(x =>
+                    if (ty != null && (ty.Count(x =>
                         x.Health < Utilities.E.GetDamage(x)*3 &&
-                        x.IsValidTarget(Utilities.E.Range)) > 1)
+                        x.IsValidTarget(Utilities.E.Range)) > 1 || ty.Count(x => x.IsValidTarget(Utilities.E.Range)) >= 5))
                     {
-                        Utilities.E.Cast();
+                        if(!Utilities.Player.HasBuff("KarthusDefile"))
+                            Utilities.E.Cast();
                     }
                     else
                     {
@@ -176,9 +183,10 @@ namespace RAREKarthus.ChampionModes
                     break;
 
                 case OrbwalkingMode.Combo:
-                    if (tx != null && tx.IsValidTarget(Utilities.E.Range))
+                    if (tx != null && tx.IsValidTarget(Utilities.E.Range) && !Utilities.Player.HasBuff("KarthusDefile"))
                     {
-                        Utilities.E.Cast();
+                        if (!Utilities.Player.HasBuff("KarthusDefile"))
+                            Utilities.E.Cast();
                     }
                     else
                     {
@@ -440,11 +448,16 @@ namespace RAREKarthus.ChampionModes
         public static void CastQ(Obj_AI_Base target, int minManaPercent = 0)
         {
             if (!Utilities.Q.IsReady() || !(GetManaPercent() >= minManaPercent) || target == null ||
-                !target.IsValidTarget() || target.IsDead)
+                !target.IsValidTarget(Utilities.Q.Range) || target.IsDead)
                 return;
 
-            Utilities.Q.GetPrediction(target, true);
-            Utilities.Q.CastIfHitchanceMinimum(target, HitChance.High);
+            Utilities.Q.Width = GetDynamicWWidth(target);
+            Utilities.Q.Cast(target);
+        }
+
+        private static float GetDynamicWWidth(Obj_AI_Base target)
+        {
+            return Math.Max(70, (1f - (ObjectManager.Player.Distance(target) / Utilities.W.Range)) * Utilities.W.Width);
         }
 
         /// <summary>
@@ -503,7 +516,7 @@ namespace RAREKarthus.ChampionModes
         /// <returns>returns if your passive is active - bool</returns>
         public static bool IsInPassiveForm()
         {
-            return Utilities.Player.IsImmovable && Utilities.Player.IsInvulnerable;
+            return Utilities.Player.HasBuff("KarthusDeathDefiedBuff");
         }
 
     }

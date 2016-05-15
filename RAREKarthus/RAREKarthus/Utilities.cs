@@ -17,7 +17,6 @@ using System.Text.RegularExpressions;
 using LeagueSharp;
 using LeagueSharp.SDK;
 using LeagueSharp.SDK.UI;
-using SharpDX;
 
 #endregion
 
@@ -51,11 +50,11 @@ namespace RAREKarthus
             {
                 using (var web = new WebClient())
                 {
-                    var source = "";
+                    var source = "https://raw.githubusercontent.com/KyonLeague/RAREScripts/master/RAREKarthus/RAREKarthus/RAREKarthus.csproj";
 
                     if (source == "") return;
 
-                    var rawFile = web.DownloadString("");
+                    var rawFile = web.DownloadString(source);
                     var checkFile =
                         new Regex(@"\[assembly\: AssemblyVersion\(""(\d{1,})\.(\d{1,})\.(\d{1,})\.(\d{1,})""\)\]").Match
                             (rawFile);
@@ -73,6 +72,10 @@ namespace RAREKarthus
                     {
                         PrintChat("Outdated! Newest Version: " + gitVersion);
                     }
+                    else
+                    {
+                        PrintChat("You are on the newest version: " + gitVersion);
+                    }
                 }
             }
             catch (Exception ex)
@@ -86,7 +89,7 @@ namespace RAREKarthus
         /// </summary>
         public static void InitMenu()
         {
-            MainMenu = new Menu("rarekarthus", "rareKarthus", true, Player.ChampionName);
+            MainMenu = new Menu("rarekarthus", "rareKarthus", true, Player.ChampionName).Attach();
             MainMenu.Separator("We love LeagueSharp.");
             MainMenu.Separator("Developer: @Kyon");
         }

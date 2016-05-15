@@ -23,6 +23,7 @@ namespace RAREKarthus
 
         private static void Main(string[] args)
         {
+            Bootstrap.Init(new string[1]);
             Events.OnLoad += Events_OnLoad;
         }
 
