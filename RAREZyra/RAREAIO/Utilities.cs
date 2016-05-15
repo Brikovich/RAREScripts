@@ -16,18 +16,18 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using LeagueSharp;
 using LeagueSharp.SDK;
-using LeagueSharp.SDK.Core.UI.IMenu;
+using LeagueSharp.SDK.UI;
+using Menu = LeagueSharp.SDK.UI.Menu;
 
 #endregion
 
-namespace RAREZyra
+namespace RAREAIO
 {
     internal class Utilities
     {
         
         internal static Menu MainMenu;
         internal static Obj_AI_Hero Player;
-        internal static TargetSelector targetSelector = Variables.TargetSelector;
         internal static Spell Q, W, E, R;
         internal static SpellSlot Flash, Ignite;
         internal const int FlashRange = 425, IgniteRange = 600;
@@ -38,7 +38,16 @@ namespace RAREZyra
         /// <param name="text">Used to give out the information as string</param>
         public static void PrintChat(string text)
         {
-            Game.PrintChat("RAREZyra => {0}", text);
+            Game.PrintChat("RAREAIO => {0}", text);
+        }
+
+        /// <summary>
+        /// Prints your text into the chat.
+        /// </summary>
+        /// <param name="text">Used to give out the information as string</param>
+        public static void Logger(string text)
+        {
+            Console.WriteLine($"RAREAIO => {text}");
         }
 
         /// <summary>
@@ -85,9 +94,51 @@ namespace RAREZyra
         /// </summary>
         public static void InitMenu()
         {
-            MainMenu = new Menu("rarekarthus", "rareKarthus", true, Player.ChampionName).Attach();
+            MainMenu = new Menu("RAREAIO", "RARE-AIO", true, "ra" + Player.SkinName).Attach();
             MainMenu.Separator("We love LeagueSharp.");
             MainMenu.Separator("Developer: @Kyon");
         }
+    }
+
+    internal static class Config
+    {
+        #region Static Fields
+
+        private static int _cBlank = -1;
+
+        #endregion
+
+        #region Public Methods and Operators
+        /// <summary>
+        /// lets you create a new menupoint inside a <seealso cref="Menu"/>.
+        /// </summary>
+        /// <param name="subMenu">Your SubMenu to add it to</param>
+        /// <param name="name">the so called ID</param>
+        /// <param name="display">The displayed name inside the game</param>
+        /// <param name="state">the default state of the menu</param>
+        /// <returns>returns a <seealso cref="MenuBool"/> the can be used.</returns>
+        public static MenuBool Bool(this Menu subMenu, string name, string display, bool state = true)
+        {
+            return subMenu.Add(new MenuBool(name, display, state));
+        }
+
+        public static MenuList List(this Menu subMenu, string name, string display, string[] array, int value = 0)
+        {
+            return subMenu.Add(new MenuList<string>(name, display, array) { Index = value });
+        }
+
+        public static MenuSeparator Separator(this Menu subMenu, string display)
+        {
+            _cBlank += 1;
+            return subMenu.Add(new MenuSeparator("blank" + _cBlank, display));
+        }
+
+        public static MenuSlider Slider(this Menu subMenu, string name, string display,
+            int cur, int min = 0, int max = 100)
+        {
+            return subMenu.Add(new MenuSlider(name, display, cur, min, max));
+        }
+
+        #endregion
     }
 }

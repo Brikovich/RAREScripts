@@ -169,9 +169,7 @@ namespace RAREKarthus.ChampionModes
             switch (mymode)
             {
                 case OrbwalkingMode.LaneClear:
-                    if (ty != null && (ty.Count(x =>
-                        x.Health < Utilities.E.GetDamage(x)*3 &&
-                        x.IsValidTarget(Utilities.E.Range)) > 1 || ty.Count(x => x.IsValidTarget(Utilities.E.Range)) >= 5))
+                    if (ty != null && (ty.Count(x => x.Health < Utilities.E.GetDamage(x)*3 && x.IsValidTarget(Utilities.E.Range)) > 1 || ty.Count(x => x.IsValidTarget(Utilities.E.Range)) >= 5))
                     {
                         if(!Utilities.Player.HasBuff("KarthusDefile"))
                             Utilities.E.Cast();
@@ -183,7 +181,7 @@ namespace RAREKarthus.ChampionModes
                     break;
 
                 case OrbwalkingMode.Combo:
-                    if (tx != null && tx.IsValidTarget(Utilities.E.Range) && !Utilities.Player.HasBuff("KarthusDefile"))
+                    if (tx != null && tx.IsValidTarget(Utilities.E.Range))
                     {
                         if (!Utilities.Player.HasBuff("KarthusDefile"))
                             Utilities.E.Cast();

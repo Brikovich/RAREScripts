@@ -12,11 +12,10 @@
 
 using System;
 using LeagueSharp.SDK;
-using RAREZyra.ChampionModes;
 
 #endregion
 
-namespace RAREZyra
+namespace RAREAIO
 {
     internal class Program
     {
@@ -30,13 +29,9 @@ namespace RAREZyra
             Utilities.Player = GameObjects.Player;
             Utilities.InitMenu();
             Utilities.UpdateCheck();
+            
+            Bootstrap.MainInit();
 
-            if (Utilities.Player.CharData.BaseSkinName == "Zyra")
-            {
-                var champion = new Zyra();
-                champion.Init();
-                Utilities.PrintChat("Zyra Initialized.");
-            }
         }
     }
 }
