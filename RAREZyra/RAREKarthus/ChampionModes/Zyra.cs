@@ -448,10 +448,10 @@ namespace RAREZyra.ChampionModes
         /// </summary>
         public static void ChampionMenu()
         {
-            var modesSettings = Utilities.MainMenu.Add(new Menu("Modes", "Modes"));
+            /*var modesSettings = Utilities.MainMenu.Add(new Menu("Modes", "Modes"));
             {
                 modesSettings.List("LaneMode", "LaningModes", new[] {"passive", "aggressiv", "support"});
-            }
+            }*/
 
             var qMenu = Utilities.MainMenu.Add(new Menu("Q", "Q spell"));
             {
@@ -508,7 +508,7 @@ namespace RAREZyra.ChampionModes
                 drawMenu.Bool("E", "Draws E");
                 drawMenu.Bool("R", "Draws R");
                 drawMenu.Bool("Plants", "Draws Plants");
-                drawMenu.Bool("Warn", "Warn no new seeds!");
+                //drawMenu.Bool("Warn", "Warn no new seeds!"); // TODO drawing seed Fappa
             }
         }
         #endregion
