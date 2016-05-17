@@ -207,12 +207,12 @@ namespace RAREKarthus.ChampionModes
 
             if (Utilities.MainMenu["R"]["KS"])
             {
-                count = GameObjects.EnemyHeroes.Count(champ => champ.Health < Utilities.R.GetDamage(champ)*0.20 && !champ.HasBuffOfType(BuffType.SpellShield));
+                count = GameObjects.EnemyHeroes.Count(champ => champ.Health < Utilities.R.GetDamage(champ)*0.20 && !champ.HasBuffOfType(BuffType.SpellShield) && champ.IsValidTarget(Utilities.R.Range));
             }
             else if (Utilities.MainMenu["R"]["Save"])
             {
                 count = GameObjects.EnemyHeroes.Count(champ => champ.Health < Utilities.R.GetDamage(champ) * 0.20
-                    && champ.CountEnemyHeroesInRange(250f) == 0 && !champ.HasBuffOfType(BuffType.SpellShield));
+                    && champ.CountEnemyHeroesInRange(250f) == 0 && !champ.HasBuffOfType(BuffType.SpellShield) && champ.IsValidTarget(Utilities.R.Range));
             }
             
             if (count >= Utilities.MainMenu["R"]["CountKS"])
