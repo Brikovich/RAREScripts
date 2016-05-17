@@ -17,19 +17,18 @@ using System.Text.RegularExpressions;
 using LeagueSharp;
 using LeagueSharp.SDK;
 using LeagueSharp.SDK.UI;
-using Menu = LeagueSharp.SDK.UI.Menu;
 
 #endregion
 
-namespace RAREAIO
+namespace RAREZyra
 {
     internal class Utilities
     {
         
         internal static Menu MainMenu;
         internal static Obj_AI_Hero Player;
+        internal static TargetSelector targetSelector = Variables.TargetSelector;
         internal static Spell Q, W, E, R;
-        internal static SpellSlot Flash, Ignite;
         internal const int FlashRange = 425, IgniteRange = 600;
 
         /// <summary>
@@ -38,16 +37,7 @@ namespace RAREAIO
         /// <param name="text">Used to give out the information as string</param>
         public static void PrintChat(string text)
         {
-            Game.PrintChat("RAREAIO => {0}", text);
-        }
-
-        /// <summary>
-        /// Prints your text into the chat.
-        /// </summary>
-        /// <param name="text">Used to give out the information as string</param>
-        public static void Logger(string text)
-        {
-            Console.WriteLine($"RAREAIO => {text}");
+            Game.PrintChat("RAREZyra => {0}", text);
         }
 
         /// <summary>
@@ -59,11 +49,11 @@ namespace RAREAIO
             {
                 using (var web = new WebClient())
                 {
-                    var source = "";
+                    var source = "https://raw.githubusercontent.com/KyonLeague/RAREScripts/master/RAREKarthus/RAREKarthus/RAREKarthus.csproj";
 
                     if (source == "") return;
 
-                    var rawFile = web.DownloadString("");
+                    var rawFile = web.DownloadString(source);
                     var checkFile =
                         new Regex(@"\[assembly\: AssemblyVersion\(""(\d{1,})\.(\d{1,})\.(\d{1,})\.(\d{1,})""\)\]").Match
                             (rawFile);
@@ -81,6 +71,10 @@ namespace RAREAIO
                     {
                         PrintChat("Outdated! Newest Version: " + gitVersion);
                     }
+                    else
+                    {
+                        PrintChat("You are on the newest version: " + gitVersion);
+                    }
                 }
             }
             catch (Exception ex)
@@ -94,7 +88,7 @@ namespace RAREAIO
         /// </summary>
         public static void InitMenu()
         {
-            MainMenu = new Menu("RAREAIO", "RARE-AIO", true, "ra" + Player.SkinName).Attach();
+            MainMenu = new Menu("rarezyra", "rareZyra", true, Player.ChampionName).Attach();
             MainMenu.Separator("We love LeagueSharp.");
             MainMenu.Separator("Developer: @Kyon");
         }
