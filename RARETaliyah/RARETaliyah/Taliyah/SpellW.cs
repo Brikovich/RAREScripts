@@ -39,8 +39,7 @@ namespace RARETaliyah.Taliyah
             var pred = SpellDetails.GetPrediction(target, true);
             if (pred != null && target.IsValid && SpellDetails.IsReady())
             {
-                SpellDetails.Cast(pred.CastPosition);
-                SpellDetails.Cast(new Vector3(pred.CastPosition.X - 10, pred.CastPosition.Y - 10, pred.CastPosition.Z));
+                SpellDetails.Cast(pred.CastPosition, Vector3.BackwardRH);
             }
         }
 
@@ -49,8 +48,7 @@ namespace RARETaliyah.Taliyah
             var pred = SpellDetails.GetPrediction(target, true);
             if (pred != null && target.IsValid && SpellDetails.IsReady())
             {
-                SpellDetails.Cast(pred.CastPosition);
-                SpellDetails.Cast(new Vector3(pred.CastPosition.X + 10, pred.CastPosition.Y + 10, pred.CastPosition.Z));
+                SpellDetails.Cast(pred.CastPosition, Vector3.ForwardRH);
             }
         }
 

@@ -24,10 +24,6 @@ using LeagueSharp;
 namespace RARETaliyah
 {
 
-    #region usages
-
-    #endregion
-
     /// <summary>
     ///     the Class boot is need for initialzing <see cref="Boot" />
     /// </summary>

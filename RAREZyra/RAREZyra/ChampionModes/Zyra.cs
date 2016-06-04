@@ -14,8 +14,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using LeagueSharp;
+using LeagueSharp.Data;
+using LeagueSharp.Data.DataTypes;
+using LeagueSharp.Data.Enumerations;
 using LeagueSharp.SDK;
 using LeagueSharp.SDK.Enumerations;
+using LeagueSharp.SDK.MoreLinq;
 using LeagueSharp.SDK.Utils;
 using RAREZyra.Properties;
 using SharpDX;
@@ -25,6 +29,7 @@ using Menu = LeagueSharp.SDK.UI.Menu;
 using Render = LeagueSharp.SDK.Utils.Render;
 using SkillshotType = LeagueSharp.SDK.Enumerations.SkillshotType;
 using Spell = LeagueSharp.SDK.Spell;
+using SpellDatabase = LeagueSharp.Data.DataTypes.SpellDatabase;
 
 #endregion
 
@@ -67,13 +72,24 @@ namespace RAREZyra.ChampionModes
         {
             #region skills setup
             // initializing all skills with all attributes
-            Utilities.Q = new Spell(SpellSlot.Q, 800)
-                .SetSkillshot(1f, 100f, int.MaxValue, false, SkillshotType.SkillshotCircle);
-            Utilities.W = new Spell(SpellSlot.W, 825);
+            //Q
+            var Q = Data.Get<SpellDatabase>().Spells.Single(spell => spell.ChampionName == "Zyra" && spell.Slot == SpellSlot.Q);
+            Utilities.Q = new Spell(SpellSlot.Q, Q.Range)
+                .SetSkillshot(Q.Delay, Q.Width, Q.MissileSpeed, Q.CollisionObjects.Any(), SkillshotType.SkillshotCircle);
+
+            //W
+            var W = Data.Get<SpellDatabase>().Spells.Single(spell => spell.ChampionName == "Zyra" && spell.Slot == SpellSlot.W);
+            Utilities.W = new Spell(SpellSlot.W, W.Range);
+
+            //E
+            var E = Data.Get<SpellDatabase>().Spells.Single(spell => spell.ChampionName == "Zyra" && spell.Slot == SpellSlot.E);
             Utilities.E = new Spell(SpellSlot.E, 1100)
-                .SetSkillshot(0.5f, 100f, 1150f, false, SkillshotType.SkillshotLine);
+                .SetSkillshot(E.Delay, E.Width, E.MissileSpeed, E.CollisionObjects.Any(), SkillshotType.SkillshotLine);
+
+            //R
+            var R = Data.Get<SpellDatabase>().Spells.Single(spell => spell.ChampionName == "Zyra" && spell.Slot == SpellSlot.R);
             Utilities.R = new Spell(SpellSlot.R, 700)
-                .SetSkillshot(0.5f, 500f, 20f, false, SkillshotType.SkillshotCircle);
+                .SetSkillshot(R.Delay, R.Width, R.MissileSpeed, R.CollisionObjects.Any(), SkillshotType.SkillshotCircle);
 
             // setting up there damage type
             Utilities.Q.DamageType = Utilities.W.DamageType = Utilities.E.DamageType = Utilities.R.DamageType =
@@ -532,7 +548,7 @@ namespace RAREZyra.ChampionModes
         /// <returns> returns your damage in double</returns>
         public static double CustomQDamage()
         {
-
+            
             var qdamage = new[] {60, 90, 120, 150, 180};
 
             if (Utilities.Q.Level >= 1)
@@ -651,6 +667,7 @@ namespace RAREZyra.ChampionModes
 
                 List<KeyValuePair<Obj_AI_Base, Zyra.Plant>> sorted =
                     (from plant in planties orderby plant.Value.Count select plant).ToList();
+
                 if (sorted.Any())
                 {
                     return sorted.Last().Value.Place.ToVector2();
@@ -660,11 +677,7 @@ namespace RAREZyra.ChampionModes
 
             }
 
-            if(h != null)
-                return Utilities.R.GetPrediction(h.FirstOrDefault(), true).CastPosition.ToVector2();
-
-
-            return Vector2.Zero;
+            return h != null ? Utilities.R.GetPrediction(h.FirstOrDefault(), true).CastPosition.ToVector2() : Vector2.Zero;
         }
 
         public static List<Obj_AI_Minion> GetPlants(Vector3 pos, float range)
