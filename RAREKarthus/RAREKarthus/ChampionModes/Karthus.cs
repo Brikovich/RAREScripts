@@ -12,14 +12,23 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.Configuration.Assemblies;
+using System.Data.SqlTypes;
 using System.Linq;
-using RAREKarthus.Additions;
+using System.Runtime.InteropServices;
 using LeagueSharp;
+using LeagueSharp.Data.Enumerations;
 using LeagueSharp.SDK;
 using LeagueSharp.SDK.Enumerations;
-using LeagueSharp.SDK.UI;
 using LeagueSharp.SDK.Utils;
+using SharpDX;
+using Color = System.Drawing.Color;
+using HealthPrediction = RAREKarthus.Additions.HealthPrediction;
+using HitChance = LeagueSharp.SDK.Enumerations.HitChance;
+using Menu = LeagueSharp.SDK.UI.Menu;
+using Render = LeagueSharp.SDK.Utils.Render;
+using SkillshotType = LeagueSharp.SDK.Enumerations.SkillshotType;
+using Spell = LeagueSharp.SDK.Spell;
 
 #endregion
 
@@ -27,6 +36,8 @@ namespace RAREKarthus.ChampionModes
 {
     internal class Karthus
     {
+
+
         /// <summary>
         ///     Initialization for Karthus.
         ///     Should be called at first.
@@ -59,6 +70,7 @@ namespace RAREKarthus.ChampionModes
             Game.OnUpdate += Game_OnUpdate;
             // drawing event to draw something => lower refresh rate than game update.
             Drawing.OnDraw += Drawing_OnDraw;
+
         }
 
         /// <summary>
@@ -107,7 +119,7 @@ namespace RAREKarthus.ChampionModes
                 // for each player, who's killable with R gets pinged.
                 foreach (var enemy in GameObjects.EnemyHeroes.Where(
                     t => ObjectManager.Player.Spellbook.CanUseSpell(SpellSlot.R) == SpellState.Ready &&
-                         t.IsValidTarget() && Utilities.R.GetDamage(t) > t.Health &&
+                         Extensions.IsValidTarget(t) && Utilities.R.GetDamage(t) > t.Health &&
                          t.Distance(ObjectManager.Player.Position) > Utilities.Q.Range))
                 {
                     Game.ShowPing(PingCategory.Danger, enemy);
@@ -162,38 +174,40 @@ namespace RAREKarthus.ChampionModes
         private static void EState(OrbwalkingMode mymode, IEnumerable<Obj_AI_Base> ty = null, Obj_AI_Hero tx = null)
         {
 
-            if (!Utilities.E.IsReady() || Core.IsInPassiveForm() ||
-                ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).ToggleState != 2)
+            if (!Utilities.E.IsReady() || Core.IsInPassiveForm())
                 return;
 
             switch (mymode)
             {
                 case OrbwalkingMode.LaneClear:
-                    if (ty != null && (ty.Count(x => x.Health < Utilities.E.GetDamage(x)*3 && x.IsValidTarget(Utilities.E.Range)) > 1 || ty.Count(x => x.IsValidTarget(Utilities.E.Range)) >= 5))
+                    if ( ( ty.Any() && ty.Count(x => x.Health < Utilities.E.GetDamage(x)*3 && x.IsValidTarget(Utilities.E.Range)) >= 2 ) || ty.Count(x => x.IsValidTarget(Utilities.E.Range)) >= 5)
                     {
                         if(!Utilities.Player.HasBuff("KarthusDefile"))
                             Utilities.E.Cast();
                     }
                     else
                     {
-                        if (Utilities.Player.HasBuff("KarthusDefile")) Utilities.E.Cast();
+                        if (Utilities.Player.HasBuff("KarthusDefile"))
+                            Utilities.E.Cast();
                     }
                     break;
 
                 case OrbwalkingMode.Combo:
-                    if (tx != null && tx.IsValidTarget(Utilities.E.Range))
+                    if (Utilities.Player.CountEnemyHeroesInRange(Utilities.E.Range) >= 1)
                     {
                         if (!Utilities.Player.HasBuff("KarthusDefile"))
                             Utilities.E.Cast();
                     }
                     else
                     {
-                        if (Utilities.Player.HasBuff("KarthusDefile")) Utilities.E.Cast();
+                        if (Utilities.Player.HasBuff("KarthusDefile"))
+                            Utilities.E.Cast();
                     }
                     break;
 
                 default:
-                    if (Utilities.Player.HasBuff("KarthusDefile")) Utilities.E.Cast();
+                    if (Utilities.Player.HasBuff("KarthusDefile"))
+                        Utilities.E.Cast();
                     break;
             }
         }
@@ -207,7 +221,7 @@ namespace RAREKarthus.ChampionModes
 
             if (Utilities.MainMenu["R"]["KS"])
             {
-                count = GameObjects.EnemyHeroes.Count(champ => champ.Health < Utilities.R.GetDamage(champ)*0.20 && !champ.HasBuffOfType(BuffType.SpellShield) && champ.IsValidTarget(Utilities.R.Range));
+                count = GameObjects.EnemyHeroes.Count(champ => champ.Health < Utilities.R.GetDamage(champ) * 0.20 && !champ.HasBuffOfType(BuffType.SpellShield) && Extensions.IsValidTarget(champ, Utilities.R.Range) && HealthPrediction.GetHealthPrediction(champ, 1500, 70) <= Utilities.R.GetDamage(champ, DamageStage.Detonation) && HealthPrediction.GetHealthPrediction(champ, 1500, 70) >= 100);
             }
             else if (Utilities.MainMenu["R"]["Save"])
             {
@@ -236,21 +250,24 @@ namespace RAREKarthus.ChampionModes
                     var target = Utilities.targetSelector.GetTargetNoCollision(Utilities.Q);
                     if (target.IsValidTarget(Utilities.Q.Range) && !target.IsDead && target.IsValid)
                     {
-                        Core.CastQ(target);
+                        var prediction = Utilities.Q.GetPrediction(target).CastPosition;
+                        Core.CastQ(target, prediction);
                     }
                 }
                 else
                 {
                     if (seltarget.IsValidTarget(Utilities.Q.Range) && !seltarget.IsDead && seltarget.IsValid)
                     {
-                        Core.CastQ(seltarget);
+                        var prediction = Utilities.Q.GetPrediction(seltarget, true, Utilities.Q.Range).CastPosition;
+                        Core.CastQ(seltarget, prediction);
                     }
                     else
                     {
                         var target = Utilities.targetSelector.GetTargetNoCollision(Utilities.Q);
                         if (target.IsValidTarget(Utilities.Q.Range) && !target.IsDead && target.IsValid)
                         {
-                            Core.CastQ(target);
+                            var prediction = Utilities.Q.GetPrediction(seltarget, true, Utilities.Q.Range).CastPosition;
+                            Core.CastQ(target, prediction);
                         }
                     }
                 }
@@ -261,21 +278,21 @@ namespace RAREKarthus.ChampionModes
                 if (seltarget == null)
                 {
                     var target = Utilities.targetSelector.GetTargetNoCollision(Utilities.W);
-                    if (target.IsValidTarget(Utilities.W.Range) && !target.IsDead && target.IsValid)
+                    if (Extensions.IsValidTarget(target, Utilities.W.Range) && !target.IsDead && target.IsValid)
                     {
                         Core.CastW(target);
                     }
                 }
                 else
                 {
-                    if (seltarget.IsValidTarget(Utilities.W.Range) && !seltarget.IsDead && seltarget.IsValid)
+                    if (Extensions.IsValidTarget(seltarget, Utilities.W.Range) && !seltarget.IsDead && seltarget.IsValid)
                     {
                         Core.CastW(seltarget);
                     }
                     else
                     {
                         var target = Utilities.targetSelector.GetTargetNoCollision(Utilities.W);
-                        if (target.IsValidTarget(Utilities.W.Range) && !target.IsDead && target.IsValid)
+                        if (Extensions.IsValidTarget(target, Utilities.W.Range) && !target.IsDead && target.IsValid)
                         {
                             Core.CastW(target);
                         }
@@ -308,6 +325,9 @@ namespace RAREKarthus.ChampionModes
             var highs = GameObjects.EnemyMinions.Where(x => Utilities.Q.IsInRange(x) && x.Health >= Core.GetQDamage(x));
 
             IEnumerable<Obj_AI_Minion> objAiBases = highs as Obj_AI_Minion[] ?? highs.ToArray();
+
+            var all = GameObjects.EnemyMinions.Where(x => Utilities.Q.IsInRange(x));
+
             if (Utilities.MainMenu["Q"]["FarmQ"])
             {
                 var objAiMinions = lowies as Obj_AI_Minion[] ?? lowies.ToArray();
@@ -318,20 +338,20 @@ namespace RAREKarthus.ChampionModes
                         var hpred = HealthPrediction.GetHealthPrediction(lo, 1000);
                         if (lo != null && hpred < Core.GetQDamage(lo) && hpred > lo.Health - hpred*2)
                         {
-                            Core.CastQ(lo, Utilities.MainMenu["Q"]["FarmMana"]);
+                            Core.CastQ(lo, Vector3.Zero, Utilities.MainMenu["Q"]["FarmMana"]);
                             // => CastQ on it, while refering on your mana.
                         }
                     }
                 }
                 else
                 {
-                    Core.CastQ(objAiBases.FirstOrDefault(), Utilities.MainMenu["Q"]["FarmMana"]);
+                    Core.CastQ(objAiBases.FirstOrDefault(), Vector3.Zero, Utilities.MainMenu["Q"]["FarmMana"]);
                 }
             }
 
             if (Utilities.MainMenu["E"]["FarmE"])
             {
-                EState(OrbwalkingMode.LaneClear, objAiBases);
+                EState(OrbwalkingMode.LaneClear, all);
             }
         }
 
@@ -356,13 +376,14 @@ namespace RAREKarthus.ChampionModes
                 var minion in
                     objAiMinions.Where(
                         minion =>
-                            minion.IsValidTarget(Utilities.Q.Range) && !minion.InAutoAttackRange() ||
+                            Extensions.IsValidTarget(minion, Utilities.Q.Range) && !minion.InAutoAttackRange() ||
                             !minion.IsUnderAllyTurret()))
             {
                 var hpred = HealthPrediction.GetHealthPrediction(minion, 1000);
                 if (minion != null && hpred < Core.GetQDamage(minion) && hpred > minion.Health - hpred*2)
                 {
-                    Core.CastQ(minion, Utilities.MainMenu["Q"]["LastMana"]);
+                    var prediction = Utilities.Q.GetPrediction(minion, true, Utilities.Q.Range).CastPosition;
+                    Core.CastQ(minion, prediction, Utilities.MainMenu["Q"]["LastMana"]);
                     // => CastQ on it, while refering on your mana.
                 }
             }
@@ -443,14 +464,20 @@ namespace RAREKarthus.ChampionModes
         /// </summary>
         /// <param name="target">target as <see cref="Obj_AI_Base" /></param>
         /// <param name="minManaPercent"></param>
-        public static void CastQ(Obj_AI_Base target, int minManaPercent = 0)
+        public static void CastQ(Obj_AI_Base target, Vector3 pred, int minManaPercent = 0)
         {
             if (!Utilities.Q.IsReady() || !(GetManaPercent() >= minManaPercent) || target == null ||
-                !target.IsValidTarget(Utilities.Q.Range) || target.IsDead)
+                !Extensions.IsValidTarget(target, Utilities.Q.Range) || target.IsDead)
                 return;
 
             Utilities.Q.Width = GetDynamicWWidth(target);
-            Utilities.Q.Cast(target);
+
+            if (pred == Vector3.Zero)
+            {
+                Utilities.Q.CastOnUnit(target);
+            }
+
+            Utilities.Q.Cast(pred);
         }
 
         private static float GetDynamicWWidth(Obj_AI_Base target)
