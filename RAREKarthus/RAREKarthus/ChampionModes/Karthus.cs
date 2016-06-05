@@ -35,8 +35,7 @@ using Spell = LeagueSharp.SDK.Spell;
 namespace RAREKarthus.ChampionModes
 {
     internal class Karthus
-    {
-
+    { 
 
         /// <summary>
         ///     Initialization for Karthus.

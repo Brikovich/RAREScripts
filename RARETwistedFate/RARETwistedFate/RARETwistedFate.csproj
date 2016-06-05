@@ -4,12 +4,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{92B15DF4-58A4-4096-ADDD-92363133913C}</ProjectGuid>
+    <ProjectGuid>{8E5853D9-37F2-4C49-AE7B-92D054E313E0}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RARETaliyah</RootNamespace>
-    <AssemblyName>RARETaliyah</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <RootNamespace>RARETwistedFate</RootNamespace>
+    <AssemblyName>RARETwistedFate</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -35,19 +35,22 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="LeagueSharp">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\LeagueSharp\System\LeagueSharp.dll</HintPath>
+      <HintPath>C:\Program Files\PlaySharp\System\LeagueSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="LeagueSharp.Common">
+      <HintPath>C:\Program Files\PlaySharp\System\LeagueSharp.Common.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp.Data">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\LeagueSharp\System\LeagueSharp.Data.dll</HintPath>
+      <HintPath>C:\Program Files\PlaySharp\System\LeagueSharp.Data.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp.SDKEx">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\LeagueSharp\System\LeagueSharp.SDKEx.dll</HintPath>
+      <HintPath>C:\Program Files\PlaySharp\System\LeagueSharp.SDKEx.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\LeagueSharp\System\SharpDX.dll</HintPath>
+      <HintPath>C:\Program Files\PlaySharp\System\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D9">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\LeagueSharp\System\SharpDX.Direct3D9.dll</HintPath>
+      <HintPath>C:\Program Files\PlaySharp\System\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -60,20 +63,45 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Boot.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Boot.cs" />
-    <Compile Include="Taliyah\Passive.cs" />
-    <Compile Include="Taliyah\SpellE.cs" />
-    <Compile Include="Taliyah\SpellQ.cs" />
-    <Compile Include="Taliyah\SpellR.cs" />
-    <Compile Include="Taliyah\SpellW.cs" />
-    <Compile Include="Taliyah\Taliyah.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="TwistedFate\CardDrawing.cs" />
+    <Compile Include="TwistedFate\CardManager.cs" />
+    <Compile Include="TwistedFate\CardsFrame.cs" />
+    <Compile Include="TwistedFate\MenuTwisted.cs" />
+    <Compile Include="TwistedFate\CardShot.cs" />
+    <Compile Include="TwistedFate\TwistedFate.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RoteKarte.jpg.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BlaueKarte.jpg.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\GoldeneKarte.jpg.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\offKarte.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\frame.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

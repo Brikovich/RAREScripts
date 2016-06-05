@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RARETaliyah", "RARETaliyah\RARETaliyah.csproj", "{92B15DF4-58A4-4096-ADDD-92363133913C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RARETwistedFate", "RARETwistedFate\RARETwistedFate.csproj", "{8E5853D9-37F2-4C49-AE7B-92D054E313E0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{92B15DF4-58A4-4096-ADDD-92363133913C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{92B15DF4-58A4-4096-ADDD-92363133913C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{92B15DF4-58A4-4096-ADDD-92363133913C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{92B15DF4-58A4-4096-ADDD-92363133913C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E5853D9-37F2-4C49-AE7B-92D054E313E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E5853D9-37F2-4C49-AE7B-92D054E313E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E5853D9-37F2-4C49-AE7B-92D054E313E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E5853D9-37F2-4C49-AE7B-92D054E313E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
