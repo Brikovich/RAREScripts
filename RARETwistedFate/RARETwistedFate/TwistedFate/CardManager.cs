@@ -105,25 +105,34 @@ namespace RARETwistedFate.TwistedFate
             return Cards.Disabled;
         }
 
+        private void InstaPickCardOnUlt()
+        {
+            if (ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).Name == "PickACard")
+            {
+                SpellW.Cast();
+                var castedCard = true;
+                while (castedCard)
+                {
+                    castedCard = !PickCard(ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).Name,
+                        GetCardfromString(MenuTwisted.MainMenu["R"]["ActiveCard"].ToString()));
+                }
+
+            }
+        }
+
+
         public void HandleCards(OrbwalkingMode orbMode, bool urgent)
         {
-            var counth = GameObjects.EnemyHeroes.Count(x => SpellW.IsInRange(x));
-            var countm = GameObjects.EnemyMinions.Count(y => SpellW.IsInRange(y)) +
-                         GameObjects.EnemyTurrets.Count(t => SpellW.IsInRange(t));
-            var countj = GameObjects.Jungle.Count(z => SpellW.IsInRange(z));
+            var counth = GameObjects.EnemyHeroes.Count(x => GameObjects.Player.Distance(x) <= SpellW.Range + 200);
+
+            var countm = GameObjects.EnemyMinions.Count(y => GameObjects.Player.Distance(y) <= SpellW.Range + 200) +
+                         GameObjects.EnemyTurrets.Count(t => GameObjects.Player.Distance(t) <= SpellW.Range + 200);
+
+            var countj = GameObjects.Jungle.Count(z => GameObjects.Player.Distance(z) <= SpellW.Range + 200);
 
             if (urgent && orbMode == OrbwalkingMode.Combo)
             {
-                if (ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).Name == "PickACard")
-                {
-                    SpellW.Cast();
-                    var castedCard = true;
-                    while (castedCard)
-                    {
-                        castedCard = PickCard(ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).Name,
-                            GetCardfromString(MenuTwisted.MainMenu["R"]["ActiveCard"].ToString()));
-                    }
-                }
+                InstaPickCardOnUlt();
             }
 
             if (orbMode == OrbwalkingMode.Combo && IsOn(orbMode) && counth > 0)

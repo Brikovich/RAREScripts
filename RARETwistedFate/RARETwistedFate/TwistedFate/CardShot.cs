@@ -42,17 +42,33 @@ namespace RARETwistedFate.TwistedFate
             if (orbMode == OrbwalkingMode.Combo && IsOn(orbMode))
             {
                 var heroes = Variables.TargetSelector.GetTargets(SpellQ.Range, DamageType.Magical, false);
-                SpellQ.CastIfHitchanceMinimum(heroes.FirstOrDefault(), SpellQ.MinHitChance);
+                foreach (var hero in heroes)
+                {
+                    if (hero.IsValidTarget(SpellQ.Range) && !hero.IsDead)
+                    {
+                        SpellQ.CastIfHitchanceMinimum(heroes.FirstOrDefault(), HitChance.High);
+                    }
+                }
+                    
             }
             else if ((orbMode == OrbwalkingMode.Hybrid || orbMode == OrbwalkingMode.LaneClear) && IsOn(orbMode))
             {
                 var minions = GameObjects.EnemyMinions.Where(m => SpellQ.IsInRange(m)).ToList();
                 var farmloc = SpellQ.GetLineFarmLocation(minions);
 
+                var minionsN = GameObjects.Jungle.Where(m => SpellQ.IsInRange(m)).ToList();
+                var farmlocN = SpellQ.GetLineFarmLocation(minionsN);
+
                 if (farmloc.MinionsHit >= 3)
                 {
                     SpellQ.Cast(farmloc.Position);
                 }
+
+                if (farmlocN.MinionsHit >= 1)
+                {
+                    SpellQ.Cast(farmlocN.Position);
+                }
+
             }
             else if (orbMode == OrbwalkingMode.LastHit && IsOn(orbMode))
             {

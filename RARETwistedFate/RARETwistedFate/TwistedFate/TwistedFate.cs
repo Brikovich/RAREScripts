@@ -67,12 +67,12 @@ namespace RARETwistedFate.TwistedFate
 
         private void DrawingOnOnDraw(EventArgs args)
         {
-            if (MenuTwisted.MainMenu["Draw"]["Q"])
+            if (MenuTwisted.MainMenu["Draw"]["Q"] && CardShot.SpellQ.Level >= 1)
             {
                 Render.Circle.DrawCircle(Player.Position, CardShot.SpellQ.Range, Color.Aqua, 2);
             }
 
-            if (MenuTwisted.MainMenu["Draw"]["W"])
+            if (MenuTwisted.MainMenu["Draw"]["W"] && CardManager.SpellW.Level >= 1)
             {
                 Render.Circle.DrawCircle(Player.Position, CardManager.SpellW.Range, Color.Brown, 2);
             }
