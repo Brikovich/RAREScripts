@@ -40,7 +40,8 @@ namespace RARETwistedFate.TwistedFate
     {
         public CardsFrame CardFrame;
         public Spell SpellW;
-        public static bool NeedToCastW = false;
+        public static bool NeedToCastW;
+
         public CardManager(TwistedFate tf)
         {
             CardFrame = new CardsFrame();
@@ -156,24 +157,6 @@ namespace RARETwistedFate.TwistedFate
             string name = ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).Name;
             if (name == "PickACard" && card != Cards.OffCard && card != Cards.Disabled)
             {
-<<<<<<< HEAD
-                return SpellW.Cast();
-                
-            }
-            if (name == "RedCardLock" && card == Cards.RedCard)
-            {
-                return SpellW.Cast();
-                
-            }
-            if (name == "BlueCardLock" && card == Cards.BlueCard)
-            {
-                return SpellW.Cast();
-                
-            }
-            if (name == "GoldCardLock" && card == Cards.GoldCard)
-            {
-                return SpellW.Cast();
-=======
                 SpellW.Cast();
                 return;
             }
@@ -193,9 +176,8 @@ namespace RARETwistedFate.TwistedFate
             {
                 SpellW.Cast();
                 NeedToCastW = false;
->>>>>>> origin/master
             }
-            
+
         }
     }
 }
