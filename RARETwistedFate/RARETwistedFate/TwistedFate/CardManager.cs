@@ -45,7 +45,7 @@ namespace RARETwistedFate.TwistedFate
         public CardManager(TwistedFate tf)
         {
             CardFrame = new CardsFrame();
-            SpellW = new Spell(SpellSlot.W, tf.Player.GetRealAutoAttackRange());
+            SpellW = new Spell(SpellSlot.W, 590f);
         }
 
         public Cards GetActiveCardCombo()
@@ -120,7 +120,6 @@ namespace RARETwistedFate.TwistedFate
             }
             NeedToCastW = true;
         }
-
 
         public void HandleCards(OrbwalkingMode orbMode, bool urgent)
         {

@@ -85,7 +85,7 @@ namespace RARETwistedFate.TwistedFate
 
         private void Game_OnUpdate(EventArgs args)
         {
-            //Game.PrintChat(MenuTwisted.MainMenu["R"]["ActiveCard"].GetValue<MenuList>().SelectedValueAsObject.ToString());
+
             switch (Variables.Orbwalker.ActiveMode)
             {
                 case OrbwalkingMode.Combo:
