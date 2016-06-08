@@ -133,6 +133,7 @@ namespace RARETwistedFate.TwistedFate
             if (urgent && orbMode == OrbwalkingMode.Combo)
             {
                 InstaPickCardOnUlt();
+                return;
             }
 
             if (orbMode == OrbwalkingMode.Combo && IsOn(orbMode) && counth > 0)
@@ -154,23 +155,22 @@ namespace RARETwistedFate.TwistedFate
         {
             if (name == "PickACard" && card != Cards.OffCard && card != Cards.Disabled)
             {
-                SpellW.Cast();
-                return true;
+                return SpellW.Cast();
+                
             }
             if (name == "RedCardLock" && card == Cards.RedCard)
             {
-                SpellW.Cast();
-                return true;
+                return SpellW.Cast();
+                
             }
             if (name == "BlueCardLock" && card == Cards.BlueCard)
             {
-                SpellW.Cast();
-                return true;
+                return SpellW.Cast();
+                
             }
             if (name == "GoldCardLock" && card == Cards.GoldCard)
             {
-                SpellW.Cast();
-                return true;
+                return SpellW.Cast();
             }
 
             return false;
