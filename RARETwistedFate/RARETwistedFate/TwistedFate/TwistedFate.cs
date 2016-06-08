@@ -22,6 +22,7 @@ using System.Drawing;
 using LeagueSharp;
 using LeagueSharp.SDK;
 using LeagueSharp.SDK.Enumerations;
+using LeagueSharp.SDK.UI;
 using LeagueSharp.SDK.Utils;
 
 #endregion
@@ -84,6 +85,7 @@ namespace RARETwistedFate.TwistedFate
 
         private void Game_OnUpdate(EventArgs args)
         {
+            //Game.PrintChat(MenuTwisted.MainMenu["R"]["ActiveCard"].GetValue<MenuList>().SelectedValueAsObject.ToString());
             switch (Variables.Orbwalker.ActiveMode)
             {
                 case OrbwalkingMode.Combo:
@@ -105,6 +107,11 @@ namespace RARETwistedFate.TwistedFate
                     CardManager.HandleCards(Variables.Orbwalker.ActiveMode, false);
                     CardShot.HandleQ(Variables.Orbwalker.ActiveMode);
                     break;
+            }
+            if (CardManager.NeedToCastW)
+            {
+                CardManager.PickCard(CardManager.GetCardfromString(MenuTwisted.MainMenu["R"]["ActiveCard"].GetValue<MenuList>().SelectedValueAsObject.ToString()));
+                
             }
         }
     }

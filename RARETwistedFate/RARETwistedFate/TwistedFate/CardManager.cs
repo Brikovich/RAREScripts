@@ -40,7 +40,7 @@ namespace RARETwistedFate.TwistedFate
     {
         public CardsFrame CardFrame;
         public Spell SpellW;
-
+        public static bool NeedToCastW = false;
         public CardManager(TwistedFate tf)
         {
             CardFrame = new CardsFrame();
@@ -110,14 +110,14 @@ namespace RARETwistedFate.TwistedFate
             if (ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).Name == "PickACard")
             {
                 SpellW.Cast();
-                var castedCard = true;
-                while (castedCard)
-                {
-                    castedCard = !PickCard(ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).Name,
-                        GetCardfromString(MenuTwisted.MainMenu["R"]["ActiveCard"].ToString()));
-                }
-
+                
+                //while (castedCard)
+                //{
+                //    castedCard = !PickCard(ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).Name,
+                //        GetCardfromString(MenuTwisted.MainMenu["R"]["ActiveCard"].ToString()));
+                //}
             }
+            NeedToCastW = true;
         }
 
 
@@ -137,43 +137,45 @@ namespace RARETwistedFate.TwistedFate
 
             if (orbMode == OrbwalkingMode.Combo && IsOn(orbMode) && counth > 0)
             {
-                PickCard(ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).Name, GetActiveCardCombo());
+                PickCard(GetActiveCardCombo());
             }
             else if ((orbMode == OrbwalkingMode.Hybrid || orbMode == OrbwalkingMode.LaneClear) && IsOn(orbMode) &&
                      (countj > 0 || countm > 0))
             {
-                PickCard(ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).Name, GetActiveCardFarm());
+                PickCard(GetActiveCardFarm());
             }
             else if (orbMode == OrbwalkingMode.LastHit && IsOn(orbMode) && countm > 0)
             {
-                PickCard(ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).Name, GetActiveCardFarm());
+                PickCard(GetActiveCardFarm());
             }
         }
 
-        private bool PickCard(string name, Cards card)
+        public void PickCard(Cards card)
         {
+            string name = ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).Name;
             if (name == "PickACard" && card != Cards.OffCard && card != Cards.Disabled)
             {
                 SpellW.Cast();
-                return true;
+                return;
             }
             if (name == "RedCardLock" && card == Cards.RedCard)
             {
                 SpellW.Cast();
-                return true;
+                NeedToCastW = false;
+                return;
             }
             if (name == "BlueCardLock" && card == Cards.BlueCard)
             {
                 SpellW.Cast();
-                return true;
+                NeedToCastW = false;
+                return;
             }
             if (name == "GoldCardLock" && card == Cards.GoldCard)
             {
                 SpellW.Cast();
-                return true;
+                NeedToCastW = false;
             }
-
-            return false;
+            
         }
     }
 }
