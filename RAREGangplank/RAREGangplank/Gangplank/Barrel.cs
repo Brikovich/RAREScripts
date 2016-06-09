@@ -12,27 +12,28 @@ namespace RAREGangplank.Gangplank
 {
     class Barrel : Spell
     {
-        // class variables
-        private static float RangeE
-            =>
-                LeagueSharp.Data.Data.Get<LeagueSharp.Data.DataTypes.SpellDatabase>()
-                    .Spells.Single(spell => spell.ChampionName == "Gangplank" && spell.Slot == SpellSlot.E)
-                    .Range;
 
-        // class variables
+        /// <summary>
+        /// The SpellDatabaseEntry for our E Spell
+        /// </summary>
         private static SpellDatabaseEntry SpellEEntry
             =>
                 LeagueSharp.Data.Data.Get<LeagueSharp.Data.DataTypes.SpellDatabase>()
                     .Spells.Single(spell => spell.ChampionName == "Gangplank" && spell.Slot == SpellSlot.E);
 
-        
-    
-        // constuctor
-        public Barrel() : base(SpellSlot.E, RangeE, TargetSelector.DamageType.Physical)
+        /// <summary>
+        /// Constructor for our Barrel-Class
+        /// </summary>
+        public Barrel() : base(SpellSlot.E, SpellEEntry.Range, TargetSelector.DamageType.Physical)
         {
-            this.SetSkillshot(SpellEEntry.Delay, SpellEEntry.Width, SpellEEntry.MissileSpeed, SpellEEntry.CollisionObjects.Any(), Utilities.ConvertToSkillshotType(SpellEEntry.SpellType));
+            this.SetSkillshot(SpellEEntry.Delay, SpellEEntry.Width, SpellEEntry.MissileSpeed, 
+                SpellEEntry.CollisionObjects.Any(), Utilities.ConvertToSkillshotType(SpellEEntry.SpellType));
         }
 
+        /// <summary>
+        /// The handler for our Barrels
+        /// </summary>
+        /// <param name="orbMode">current orbwalk mode</param>
         public static void HandleBarrel(Orbwalking.OrbwalkingMode orbMode)
         {
             switch (orbMode)

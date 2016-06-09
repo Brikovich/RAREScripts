@@ -12,32 +12,27 @@ namespace RAREGangplank.Gangplank
     class Citrus : Spell
     {
 
-        // class variables
-        private static float RangeW
+        /// <summary>
+        /// The SpellDatabaseEntry for our W Spell
+        /// </summary>
+        private static SpellDatabaseEntry SpellWEntry
             =>
                 LeagueSharp.Data.Data.Get<LeagueSharp.Data.DataTypes.SpellDatabase>()
-                    .Spells.Single(spell => spell.ChampionName == "Gangplank" && spell.Slot == SpellSlot.W)
-                    .Range;
-
-        // class variables
-        private static SpellDatabaseEntry SpellEEntry
-            =>
-                LeagueSharp.Data.Data.Get<LeagueSharp.Data.DataTypes.SpellDatabase>()
-                    .Spells.Single(spell => spell.ChampionName == "Gangplank" && spell.Slot == SpellSlot.E);
+                    .Spells.Single(spell => spell.ChampionName == "Gangplank" && spell.Slot == SpellSlot.W);
 
 
 
-        public Citrus() : base(SpellSlot.W, RangeW, TargetSelector.DamageType.Magical)
+        public Citrus() : base(SpellSlot.W, SpellWEntry.Range, TargetSelector.DamageType.Magical)
         {
             
         }
 
         public bool PlayerNeedsCitrus()
         {
-            //TODO: Float Menu !!!
+            var healthPercent = GMenu.MainMenu.Item("lifeCitrus").GetValue<Slider>().Value;
             return ( Gangplank.Player.IsImmovable || Gangplank.Player.IsStunned ||
                      Gangplank.Player.IsRooted || Gangplank.Player.IsCharmed )
-                     && Gangplank.Player.Health < Gangplank.Player.MaxHealth; 
+                     && Gangplank.Player.Health < (Gangplank.Player.MaxHealth * healthPercent); 
         }
 
         public double CirtusHeal()

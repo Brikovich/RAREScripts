@@ -11,7 +11,11 @@ namespace RAREGangplank
     internal class Utilities
     {
 
-        // class methods
+        /// <summary>
+        /// Converts SpellTypes out of the Database into SkillshotTypes
+        /// </summary>
+        /// <param name="spellType">The SpellType of the DatabaseEntry</param>
+        /// <returns>SkillshotType for you Spell</returns>
         public static SkillshotType ConvertToSkillshotType(SpellType spellType)
         {
             return new List<SpellType> { SpellType.SkillshotCircle, SpellType.SkillshotMissileCircle }.Contains(spellType)
