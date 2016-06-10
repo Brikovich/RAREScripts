@@ -18,7 +18,7 @@ namespace RAREGangplank
 
         private static void Game_OnGameLoad(EventArgs args)
         {
-            Gangplank.Gangplank.Load();
+            new Gangplank.Gangplank().Load();
         }
     }
 }

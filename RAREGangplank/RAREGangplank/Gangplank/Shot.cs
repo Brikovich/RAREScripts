@@ -21,9 +21,33 @@ namespace RAREGangplank.Gangplank
 
 
 
-        public Shot() : base(SpellSlot.W, SpellQEntry.Range, TargetSelector.DamageType.Magical)
+        public Shot() : base(SpellSlot.Q, SpellQEntry.Range, TargetSelector.DamageType.Physical)
         {
             this.SetTargetted(SpellQEntry.Delay, SpellQEntry.MissileSpeed);
+        }
+
+        public void HandleSpell(Orbwalking.OrbwalkingMode orbMode)
+        {
+            if (orbMode == Orbwalking.OrbwalkingMode.LaneClear && GMenu.MainMenu.Item("shotLC").GetValue<bool>())
+            {
+                var minion = ObjectManager.Get<Obj_AI_Minion>()
+                    .Where(x => x.IsValid && this.IsInRange(x) && x.IsTargetable && x.Health <= this.GetDamage(x))
+                        .OrderByDescending(y => y.Health)
+                            .FirstOrDefault();
+                // check if any barrel is stored
+                if (Barrel._barrels.Any(x => x.InfoMinion.Health <= 1))
+                {
+                    var barrel = Barrel._barrels.FirstOrDefault(x => x.InfoMinion.Health <= 1);
+
+                    if (barrel != null)
+                        CastOnUnit(barrel.InfoMinion);
+                }
+                else if (minion != null)
+                {
+                    this.CastOnUnit(minion);
+                }
+               
+            }
         }
     }
 }

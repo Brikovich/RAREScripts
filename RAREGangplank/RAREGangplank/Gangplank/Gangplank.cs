@@ -23,6 +23,10 @@ namespace RAREGangplank.Gangplank
         /// </summary>
         private const string HERONAME = "Gangplank";
 
+        internal static Orbwalking.Orbwalker OrbW;
+
+        internal static TargetSelector TSelector;
+
         /// <summary>
         /// Variable for holding the BarrelSpell
         /// </summary>
@@ -51,10 +55,13 @@ namespace RAREGangplank.Gangplank
             // init Menu
             GMenu.Init();
 
+            // init TargetSelector
+            TSelector = new TargetSelector();
+
             // subscribe to events
             Drawing.OnDraw += Drawing_OnDraw;
             Game.OnUpdate += Game_OnUpdate;
-             
+            
         }
 
         /// <summary>
@@ -63,7 +70,14 @@ namespace RAREGangplank.Gangplank
         /// <param name="args"></param>
         private void Game_OnUpdate(EventArgs args)
         {
-            // implement champion logic :klappa:
+
+            switch (OrbW.ActiveMode)
+            {
+                case Orbwalking.OrbwalkingMode.LaneClear:
+                    shotSpell.HandleSpell(OrbW.ActiveMode);
+                    barrelSpell.HandleBarrel(OrbW.ActiveMode);
+                    break;
+            }
 
         }
 
@@ -75,14 +89,13 @@ namespace RAREGangplank.Gangplank
         private void Drawing_OnDraw(EventArgs args)
         {
             var drawQ = GMenu.MainMenu.Item("drawQ").GetValue<Circle>();
-            var drawW = GMenu.MainMenu.Item("drawW").GetValue<Circle>();
             var drawE = GMenu.MainMenu.Item("drawE").GetValue<Circle>();
 
             if (shotSpell.Level >= 1 && drawQ.Active)
-                Render.Circle.DrawCircle(Player.Position, shotSpell.Range, Color.DarkGoldenrod);
+                Render.Circle.DrawCircle(Player.Position, shotSpell.Range, drawQ.Color);
 
-            if (barrelSpell.Level >= 1 && drawW.Active)
-                Render.Circle.DrawCircle(Player.Position, barrelSpell.Range, Color.Firebrick);
+            if (barrelSpell.Level >= 1 && drawE.Active)
+                Render.Circle.DrawCircle(Player.Position, barrelSpell.Range, drawE.Color);
 
         }
 

@@ -17,9 +17,7 @@
 
 #region usages
 
-using System;
 using LeagueSharp.Common;
-
 
 #endregion
 
@@ -33,26 +31,22 @@ namespace RAREGangplank
         {
             MainMenu = new Menu("RAREGangplank", "raregangplank", true);
 
-            Menu comboMenu = MainMenu.AddSubMenu(new Menu("Shot", "Shot"));
-            comboMenu.AddItem(new MenuItem("comboQ", "Use Q").SetValue(true));
-            comboMenu.AddItem(new MenuItem("comboW", "Use W").SetValue(true));
-            comboMenu.AddItem(new MenuItem("comboE", "Use E").SetValue(true));
-            comboMenu.AddItem(new MenuItem("comboR", "Use R").SetValue(true));
-            comboMenu.AddItem(new MenuItem("comboROnlyUserInitiate", "Use R only if user initiated").SetValue(false));
+            // init Orbwalker
+            Gangplank.Gangplank.OrbW = new Orbwalking.Orbwalker(MainMenu.AddSubMenu(new Menu(":: Orbwalker", "orbwalker")));
 
+            Menu comboMenu = MainMenu.AddSubMenu(new Menu(":: Shot", "Shot"));
+            comboMenu.AddItem(new MenuItem("shotLC", "Use in LaneClear").SetValue(true));
 
-            var harassMenu = MainMenu.AddSubMenu(new Menu("Harass", "Harass"));
-            harassMenu.AddItem(new MenuItem("harassQ", "Use Q").SetValue(true));
-            harassMenu.AddItem(new MenuItem("harassE", "Use E").SetValue(true));
-            harassMenu.AddItem(new MenuItem("harassPercent", "Skills until Mana %").SetValue(new Slider(20)));
+            var harassMenu = MainMenu.AddSubMenu(new Menu(":: Barrel", "Barrel"));
+            harassMenu.AddItem(new MenuItem("barrelLC", "Use in LaneClear").SetValue(true));
+            harassMenu.AddItem(new MenuItem("countLC", "Use in LaneClear").SetValue(new Slider(5, 1, 10)));
 
-            var citrusMenu = MainMenu.AddSubMenu(new Menu("Citrus", "Citrus"));
+            var citrusMenu = MainMenu.AddSubMenu(new Menu(":: Citrus", "Citrus"));
             citrusMenu.AddItem(new MenuItem("lifeCitrus", "Min Health %").SetValue(new Slider(70)));
 
-            var drawMenu = MainMenu.AddSubMenu(new Menu("Drawing", "Drawing"));
+            var drawMenu = MainMenu.AddSubMenu(new Menu(":: Drawing", "Drawing"));
             drawMenu.AddItem(new MenuItem("drawQ", "Draw Q range").SetValue(new Circle(true, System.Drawing.Color.FromArgb(125, 0, 255, 0))));
-            drawMenu.AddItem(new MenuItem("drawE", "Draw E range").SetValue(new Circle(true, System.Drawing.Color.FromArgb(125, 254, 13, 113))));
-            drawMenu.AddItem(new MenuItem("drawW", "Draw W range").SetValue(new Circle(false, System.Drawing.Color.FromArgb(125, 0, 0, 255))));
+            drawMenu.AddItem(new MenuItem("drawE", "Draw E range").SetValue(new Circle(false, System.Drawing.Color.FromArgb(125, 0, 0, 255))));
             var dmgAfterComboItem = new MenuItem("DamageAfterCombo", "Draw Combo Damage").SetValue(true);
             drawMenu.AddItem(dmgAfterComboItem);
 
