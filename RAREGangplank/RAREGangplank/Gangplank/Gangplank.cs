@@ -30,13 +30,13 @@ namespace RAREGangplank.Gangplank
         /// <summary>
         /// Variable for holding the BarrelSpell
         /// </summary>
-        private Barrel barrelSpell;
+        internal static Barrel barrelSpell;
 
-        private Citrus citrusSpell;
+        internal static Citrus citrusSpell;
 
-        private Shot shotSpell;
+        internal static Shot shotSpell;
 
-        private Spell RSpell;
+        internal static Spell RSpell;
 
         /// <summary>
         /// Loading method for initilaziation of our whole assembly
@@ -70,12 +70,16 @@ namespace RAREGangplank.Gangplank
         /// <param name="args"></param>
         private void Game_OnUpdate(EventArgs args)
         {
-
+            Console.WriteLine(barrelSpell.Cooldown);
             switch (OrbW.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.LaneClear:
-                    shotSpell.HandleSpell(OrbW.ActiveMode);
                     barrelSpell.HandleBarrel(OrbW.ActiveMode);
+                    shotSpell.HandleSpell(OrbW.ActiveMode);
+                    break;
+                case Orbwalking.OrbwalkingMode.Combo:
+                    barrelSpell.HandleBarrel(OrbW.ActiveMode);
+                    shotSpell.HandleSpell(OrbW.ActiveMode);
                     break;
             }
 
@@ -115,8 +119,6 @@ namespace RAREGangplank.Gangplank
                 spelllist.Add(barrelSpell.Slot);
             if(citrusSpell.IsReady())
                 spelllist.Add(citrusSpell.Slot);
-            if(RSpell.IsReady())
-                spelllist.Add(RSpell.Slot);
                 
             return spelllist;
 

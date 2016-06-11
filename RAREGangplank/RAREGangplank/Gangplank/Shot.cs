@@ -28,17 +28,31 @@ namespace RAREGangplank.Gangplank
 
         public void HandleSpell(Orbwalking.OrbwalkingMode orbMode)
         {
-            if (orbMode == Orbwalking.OrbwalkingMode.LaneClear && GMenu.MainMenu.Item("shotLC").GetValue<bool>())
+
+            if (orbMode == Orbwalking.OrbwalkingMode.Combo && GMenu.MainMenu.Item("shotCM").GetValue<bool>())
+            {
+                if (this.IsReady() && Barrel.Barrels != null)
+                {
+                    var barrel = Barrel.Barrels.FirstOrDefault(x => x.InfoMinion.Health <= 1);
+
+                    if (barrel != null && barrel.InfoMinion.CountEnemiesInRange(Barrel.BarrelExplosionRadius) >= 1
+                            && Cooldown < Gangplank.barrelSpell.GetMaxCooldown())
+                    {
+                        CastOnUnit(barrel.InfoMinion);
+                    }
+                }
+            }
+            else if (orbMode == Orbwalking.OrbwalkingMode.LaneClear && GMenu.MainMenu.Item("shotLC").GetValue<bool>())
             {
                 var minion = ObjectManager.Get<Obj_AI_Minion>()
                     .Where(x => x.IsValid && this.IsInRange(x) && x.IsTargetable && x.Health <= this.GetDamage(x))
                         .OrderByDescending(y => y.Health)
                             .FirstOrDefault();
-                // check if any barrel is stored
-                if (Barrel._barrels.Any(x => x.InfoMinion.Health <= 1))
-                {
-                    var barrel = Barrel._barrels.FirstOrDefault(x => x.InfoMinion.Health <= 1);
 
+                // check if any barrel is stored
+                if (Barrel.Barrels != null && Barrel.Barrels.Any(x => x.InfoMinion.Health <= 1))
+                {
+                    var barrel = Barrel.Barrels.FirstOrDefault(x => x.InfoMinion.Health <= 1);
                     if (barrel != null)
                         CastOnUnit(barrel.InfoMinion);
                 }
@@ -49,5 +63,9 @@ namespace RAREGangplank.Gangplank
                
             }
         }
+
+        
+            
+
     }
 }

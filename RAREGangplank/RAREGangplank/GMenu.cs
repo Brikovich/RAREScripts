@@ -35,13 +35,18 @@ namespace RAREGangplank
             Gangplank.Gangplank.OrbW = new Orbwalking.Orbwalker(MainMenu.AddSubMenu(new Menu(":: Orbwalker", "orbwalker")));
 
             Menu comboMenu = MainMenu.AddSubMenu(new Menu(":: Shot", "Shot"));
+            comboMenu.AddItem(new MenuItem("shotCM", "Use in Combo").SetValue(true));
             comboMenu.AddItem(new MenuItem("shotLC", "Use in LaneClear").SetValue(true));
-
+            
             var harassMenu = MainMenu.AddSubMenu(new Menu(":: Barrel", "Barrel"));
+            harassMenu.AddItem(new MenuItem("barrelCM", "Use in Combo").SetValue(true));
+            harassMenu.AddItem(new MenuItem("radiusCM", "reduce connectionradius").SetValue(new Slider(50, 0, 150)));
+
             harassMenu.AddItem(new MenuItem("barrelLC", "Use in LaneClear").SetValue(true));
             harassMenu.AddItem(new MenuItem("countLC", "How many barrels to use").SetValue(new Slider(1, 1, 4)));
-            harassMenu.AddItem(new MenuItem("hitLC", "Hitting minions").SetValue(new Slider(5, 1, 10)));
+            harassMenu.AddItem(new MenuItem("hitLC", "Hitting minions").SetValue(new Slider(4, 1, 10)));
 
+            
             var citrusMenu = MainMenu.AddSubMenu(new Menu(":: Citrus", "Citrus"));
             citrusMenu.AddItem(new MenuItem("lifeCitrus", "Min Health %").SetValue(new Slider(70)));
 
