@@ -1,7 +1,7 @@
 ﻿#region copyrights
 
 //  Copyright 2016 Marvin Piekarek
-//  Barrel.cs is part of RAREGangplank.
+//  BarrelSpell.cs is part of RAREGangplank.
 //  RAREGangplank is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
@@ -20,7 +20,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Channels;
 using LeagueSharp;
 using LeagueSharp.Common;
 using LeagueSharp.Data;
@@ -37,10 +36,10 @@ namespace RAREGangplank.Gangplank.BarrelClasses
 
         internal static List<Barrel> ActiveBarrels;
 
+        internal readonly int ConnectionRadius = 650;
+
         internal readonly int ExplosionRadius = 400;
 
-        internal readonly int ConnectionRadius = 650;
-        
         private static SpellDatabaseEntry SpellEEntry =>
             Data.Get<SpellDatabase>()
                 .Spells.Single(spell => spell.ChampionName == "Gangplank" && spell.Slot == SpellSlot.E);
@@ -51,14 +50,14 @@ namespace RAREGangplank.Gangplank.BarrelClasses
 
         public BarrelSpell() : base(SpellSlot.E, SpellEEntry.Range, TargetSelector.DamageType.Physical)
         {
-
             SetSkillshot(SpellEEntry.Delay/1000f, SpellEEntry.Width, SpellEEntry.MissileSpeed,
                 SpellEEntry.CollisionObjects.Any(), Utilities.ConvertToSkillshotType(SpellEEntry.SpellType));
 
             GameObject.OnCreate += GameObject_OnCreate;
             GameObject.OnDelete += GameObjectOnOnDelete;
-
         }
+
+        #endregion
 
         private void GameObjectOnOnDelete(GameObject sender, EventArgs args)
         {
@@ -70,16 +69,15 @@ namespace RAREGangplank.Gangplank.BarrelClasses
             }
         }
 
-        private void GameObject_OnCreate(GameObject sender, System.EventArgs args)
+        private void GameObject_OnCreate(GameObject sender, EventArgs args)
         {
             if (!sender.IsMe && sender.Name == "Barrel")
             {
                 // creats a new list entry with the data of the placed barrel.
-                ActiveBarrels.Add(new Barrel((Obj_AI_Base)sender));
+                ActiveBarrels.Add(new Barrel((Obj_AI_Base) sender));
             }
         }
 
-        #endregion
     }
 
 }

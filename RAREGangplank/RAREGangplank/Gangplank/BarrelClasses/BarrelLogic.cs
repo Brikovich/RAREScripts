@@ -22,8 +22,6 @@ using System.Collections.Generic;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
-using LeagueSharp.Data;
-using LeagueSharp.Data.DataTypes;
 using SharpDX;
 using Color = System.Drawing.Color;
 
@@ -36,14 +34,12 @@ namespace RAREGangplank.Gangplank.BarrelClasses
     {
         #region Fields and Constants
 
+        internal static float Rotation = 28*(float) Math.PI/180;
+
         /// <summary>
         ///   all placed barrels
         /// </summary>
-       
-
         internal BarrelSpell barrel;
-
-        internal static float Rotation = 28*(float) Math.PI/180;
 
         private int GetStacks => barrel.Instance.Ammo;
 
@@ -51,7 +47,7 @@ namespace RAREGangplank.Gangplank.BarrelClasses
 
         #region Constructors
 
-        public BarrelLogic() 
+        public BarrelLogic()
         {
             barrel = new BarrelSpell();
         }
@@ -70,7 +66,9 @@ namespace RAREGangplank.Gangplank.BarrelClasses
             pos.RotateAroundPoint(rotatePos, angle);
 
         private List<GrassObject> BushInRange() =>
-            ObjectManager.Get<GrassObject>().Where(g => g.Position.Distance(Gangplank.Player.Position) < barrel.Range).ToList();
+            ObjectManager.Get<GrassObject>()
+                .Where(g => g.Position.Distance(Gangplank.Player.Position) < barrel.Range)
+                .ToList();
 
         #endregion
 
@@ -116,7 +114,6 @@ namespace RAREGangplank.Gangplank.BarrelClasses
                 VectorIdea.Add(pred.CastPosition);
                 VectorIdea.Add(Gangplank.Player.Position.Extend(pred.CastPosition,
                     pred.CastPosition.Distance(Gangplank.Player.Position) - barrel.ExplosionRadius /2f));*/
-
             }
             else if (orbMode == Orbwalking.OrbwalkingMode.LaneClear)
             {
@@ -161,7 +158,8 @@ namespace RAREGangplank.Gangplank.BarrelClasses
                         var secFarm = GetBestLoc(secminions);
 
                         // checking if the farmLoc is valid for us
-                        if (secFarm.Position != Vector2.Zero && Gangplank.Player.Distance(secFarm.Position) <= barrel.Range)
+                        if (secFarm.Position != Vector2.Zero &&
+                            Gangplank.Player.Distance(secFarm.Position) <= barrel.Range)
                         {
                             barrel.Cast(secFarm.Position);
                         }
@@ -203,7 +201,8 @@ namespace RAREGangplank.Gangplank.BarrelClasses
             if (baseList == null)
                 return new MinionManager.FarmLocation(Vector2.Zero, -1);
 
-            var positions = MinionManager.GetMinionsPredictedPositions(baseList, barrel.Delay, barrel.Width, barrel.Speed,
+            var positions = MinionManager.GetMinionsPredictedPositions(baseList, barrel.Delay, barrel.Width,
+                barrel.Speed,
                 Gangplank.Player.Position, barrel.Range, false, SkillshotType.SkillshotCircle);
 
             // uses the predicted position to get a good circular farm spot 
