@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
 using LeagueSharp.Data.DataTypes;
+using RAREGangplank.Gangplank.BarrelClasses;
 
 namespace RAREGangplank.Gangplank
 {
@@ -33,12 +34,12 @@ namespace RAREGangplank.Gangplank
             {
                 if (this.IsReady() && Barrel.Barrels != null)
                 {
-                    var barrel = Barrel.Barrels.FirstOrDefault(x => x.InfoMinion.Health <= 1);
+                    var barrel = Barrel.Barrels.FirstOrDefault(x => x.Health <= 1);
 
-                    if (barrel != null && barrel.InfoMinion.CountEnemiesInRange(Barrel.BarrelExplosionRadius) >= 1
-                            && Cooldown < Gangplank.barrelSpell.GetMaxCooldown())
+                    if (barrel != null && barrel.CountEnemiesInRange(Barrel.BarrelExplosionRadius) >= 1
+                            && Cooldown < Gangplank.BarrelSpell.GetMaxCooldown())
                     {
-                        CastOnUnit(barrel.InfoMinion);
+                        CastOnUnit(barrel);
                     }
                 }
             }
@@ -50,11 +51,11 @@ namespace RAREGangplank.Gangplank
                             .FirstOrDefault();
 
                 // check if any barrel is stored
-                if (Barrel.Barrels != null && Barrel.Barrels.Any(x => x.InfoMinion.Health <= 1))
+                if (Barrel.Barrels != null && Barrel.Barrels.Any(x => x.Health <= 1))
                 {
-                    var barrel = Barrel.Barrels.FirstOrDefault(x => x.InfoMinion.Health <= 1);
+                    var barrel = Barrel.Barrels.FirstOrDefault(x => x.Health <= 1);
                     if (barrel != null)
-                        CastOnUnit(barrel.InfoMinion);
+                        CastOnUnit(barrel);
                 }
                 else if (minion != null)
                 {

@@ -60,7 +60,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Boot.cs" />
-    <Compile Include="Gangplank\Barrel.cs" />
+    <Compile Include="Gangplank\BarrelClasses\Barrel.cs" />
+    <Compile Include="Gangplank\BarrelClasses\BarrelSpell.cs" />
+    <Compile Include="Gangplank\BarrelClasses\BarrelLogic.cs" />
     <Compile Include="Gangplank\Citrus.cs" />
     <Compile Include="Gangplank\Gangplank.cs" />
     <Compile Include="Gangplank\Shot.cs" />

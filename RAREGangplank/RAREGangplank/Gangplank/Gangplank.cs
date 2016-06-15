@@ -1,93 +1,111 @@
-﻿using System;
+﻿#region copyrights
+
+//  Copyright 2016 Marvin Piekarek
+//  Gangplank.cs is part of RAREGangplank.
+//  RAREGangplank is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//  RAREGangplank is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//  GNU General Public License for more details.
+//  You should have received a copy of the GNU General Public License
+//  along with RAREGangplank. If not, see <http://www.gnu.org/licenses/>.
+
+#endregion
+
+#region usages
+
+using System;
 using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
-using SharpDX;
-using Color = System.Drawing.Color;
+using RAREGangplank.Gangplank.BarrelClasses;
+
+#endregion
 
 namespace RAREGangplank.Gangplank
 {
-    class Gangplank
+
+    internal class Gangplank
     {
-        /// <summary>
-        /// Equals the current player with all his data
-        /// </summary>
-        internal static Obj_AI_Hero Player => ObjectManager.Player;
+        #region Fields and Constants
 
         /// <summary>
-        /// Constant that holds the Championname
+        ///   Constant that holds the Championname
         /// </summary>
-        private const string HERONAME = "Gangplank";
+        private const string Heroname = "Gangplank";
 
         internal static Orbwalking.Orbwalker OrbW;
 
-        internal static TargetSelector TSelector;
+        internal static TargetSelector Selector;
 
         /// <summary>
-        /// Variable for holding the BarrelSpell
+        ///   Variable for holding the BarrelSpell
         /// </summary>
-        internal static Barrel barrelSpell;
+        internal static Barrel BarrelSpell;
 
-        internal static Citrus citrusSpell;
+        internal static Citrus CitrusSpell;
 
-        internal static Shot shotSpell;
+        internal static Shot ShotSpell;
 
         internal static Spell RSpell;
 
         /// <summary>
-        /// Loading method for initilaziation of our whole assembly
+        ///   Equals the current player with all his data
+        /// </summary>
+        internal static Obj_AI_Hero Player => ObjectManager.Player;
+
+        #endregion
+
+        /// <summary>
+        ///   Loading method for initilaziation of our whole assembly
         /// </summary>
         public void Load()
         {
-            if (Player.CharData.BaseSkinName != HERONAME)
+            if (Player.CharData.BaseSkinName != Heroname)
                 return;
 
             // init spells
-            barrelSpell = new Barrel();
-            citrusSpell = new Citrus();
-            shotSpell = new Shot();
+            BarrelSpell = new Barrel();
+            CitrusSpell = new Citrus();
+            ShotSpell = new Shot();
             RSpell = new Spell(SpellSlot.R);
 
             // init Menu
             GMenu.Init();
 
             // init TargetSelector
-            TSelector = new TargetSelector();
+            Selector = new TargetSelector();
 
             // subscribe to events
             Drawing.OnDraw += Drawing_OnDraw;
             Game.OnUpdate += Game_OnUpdate;
-            
         }
 
         /// <summary>
-        /// OnUpdate Event (ticks every 10ms) 
+        ///   OnUpdate Event (ticks every 10ms)
         /// </summary>
         /// <param name="args"></param>
         private void Game_OnUpdate(EventArgs args)
         {
-            Console.WriteLine(barrelSpell.Cooldown);
             switch (OrbW.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.LaneClear:
-                    barrelSpell.HandleBarrel(OrbW.ActiveMode);
-                    shotSpell.HandleSpell(OrbW.ActiveMode);
+                    BarrelSpell.HandleBarrel(OrbW.ActiveMode);
+                    ShotSpell.HandleSpell(OrbW.ActiveMode);
                     break;
                 case Orbwalking.OrbwalkingMode.Combo:
-                    barrelSpell.HandleBarrel(OrbW.ActiveMode);
-                    shotSpell.HandleSpell(OrbW.ActiveMode);
+                    BarrelSpell.HandleBarrel(OrbW.ActiveMode);
+                    ShotSpell.HandleSpell(OrbW.ActiveMode);
                     break;
             }
-
         }
 
         /// <summary>
-        /// The Drawing on Draw event for every drawing we make.
-        /// Has lowered refresh rates than GameOnUpdate 
+        ///   The Drawing on Draw event for every drawing we make.
+        ///   Has lowered refresh rates than GameOnUpdate
         /// </summary>
         /// <param name="args"></param>
         private void Drawing_OnDraw(EventArgs args)
@@ -95,12 +113,11 @@ namespace RAREGangplank.Gangplank
             var drawQ = GMenu.MainMenu.Item("drawQ").GetValue<Circle>();
             var drawE = GMenu.MainMenu.Item("drawE").GetValue<Circle>();
 
-            if (shotSpell.Level >= 1 && drawQ.Active)
-                Render.Circle.DrawCircle(Player.Position, shotSpell.Range, drawQ.Color);
+            if (ShotSpell.Level >= 1 && drawQ.Active)
+                Render.Circle.DrawCircle(Player.Position, ShotSpell.Range, drawQ.Color);
 
-            if (barrelSpell.Level >= 1 && drawE.Active)
-                Render.Circle.DrawCircle(Player.Position, barrelSpell.Range, drawE.Color);
-
+            if (BarrelSpell.Level >= 1 && drawE.Active)
+                Render.Circle.DrawCircle(Player.Position, BarrelSpell.Range, drawE.Color);
         }
 
         private float GetComboDamage(Obj_AI_Base target)
@@ -113,16 +130,16 @@ namespace RAREGangplank.Gangplank
         {
             var spelllist = new List<SpellSlot>();
 
-            if(shotSpell.IsReady())
-                spelllist.Add(shotSpell.Slot);
-            if(barrelSpell.IsReady())
-                spelllist.Add(barrelSpell.Slot);
-            if(citrusSpell.IsReady())
-                spelllist.Add(citrusSpell.Slot);
-                
-            return spelllist;
+            if (ShotSpell.IsReady())
+                spelllist.Add(ShotSpell.Slot);
+            if (BarrelSpell.IsReady())
+                spelllist.Add(BarrelSpell.Slot);
+            if (CitrusSpell.IsReady())
+                spelllist.Add(CitrusSpell.Slot);
 
+            return spelllist;
         }
 
     }
+
 }
