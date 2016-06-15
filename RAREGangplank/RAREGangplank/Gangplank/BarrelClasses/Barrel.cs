@@ -28,7 +28,7 @@ namespace RAREGangplank.Gangplank.BarrelClasses
     {
         #region Fields and Constants
 
-        internal Obj_AI_Base data;
+        internal Obj_AI_Base Data;
 
         #endregion
 
@@ -36,7 +36,7 @@ namespace RAREGangplank.Gangplank.BarrelClasses
 
         public Barrel(Obj_AI_Base mybase)
         {
-            data = mybase;
+            Data = mybase;
         }
 
         #endregion

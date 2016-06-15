@@ -41,6 +41,20 @@ namespace RAREGangplank
                 : SkillshotType.SkillshotLine;
         }
 
+        /// <summary>
+        /// gets a boolean out of the menu
+        /// </summary>
+        /// <param name="name">name of the item you want to receive</param>
+        /// <returns>bool that returns the items current value</returns>
+        public static bool GetMenuBool(string name) => GMenu.MainMenu.Item(name).GetValue<bool>();
+
+        /// <summary>
+        /// gets a int out of the menu
+        /// </summary>
+        /// <param name="name">name of the item you want to receive</param>
+        /// <returns>int that returns the items current value</returns>
+        public static int GetMenuValue(string name) => GMenu.MainMenu.Item(name).GetValue<Slider>().Value;
+
     }
 
 }

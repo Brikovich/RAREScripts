@@ -24,6 +24,7 @@ using LeagueSharp;
 using LeagueSharp.Common;
 using LeagueSharp.Data;
 using LeagueSharp.Data.DataTypes;
+using SharpDX;
 
 #endregion
 
@@ -35,6 +36,8 @@ namespace RAREGangplank.Gangplank.BarrelClasses
         #region Fields and Constants
 
         internal static List<Barrel> ActiveBarrels;
+
+        // internal static float Rotation = 28 * (float)Math.PI / 180;
 
         internal readonly int ConnectionRadius = 650;
 
@@ -64,7 +67,7 @@ namespace RAREGangplank.Gangplank.BarrelClasses
             if (!sender.IsMe && sender.Name == "Barrel")
             {
                 // deleting barrels that got destroyed
-                var id = ActiveBarrels.FindIndex(y => y.data.NetworkId == sender.NetworkId);
+                var id = ActiveBarrels.FindIndex(y => y.Data.NetworkId == sender.NetworkId);
                 ActiveBarrels.RemoveAt(id);
             }
         }
@@ -78,6 +81,28 @@ namespace RAREGangplank.Gangplank.BarrelClasses
             }
         }
 
+        internal MinionManager.FarmLocation GetBestLoc(List<Obj_AI_Base> baseList)
+        {
+            if (baseList == null)
+            {
+                return new MinionManager.FarmLocation(Vector2.Zero, -1);
+            }
+                
+            var positions = MinionManager.GetMinionsPredictedPositions(baseList, Delay, Width,
+                Speed, Gangplank.Player.Position, Range, false, SkillshotType.SkillshotCircle);
+
+            // uses the predicted position to get a good circular farm spot 
+            return MinionManager.GetBestCircularFarmLocation(positions, Width, Range);
+        }
+
+        private void CastBarrel(Vector2 pos)
+        {
+            if (pos.IsValid())
+            {
+                Cast(pos);
+            }
+                
+        }
     }
 
 }

@@ -48,6 +48,7 @@ namespace RAREGangplank
             var harassMenu = MainMenu.AddSubMenu(new Menu(":: Barrel", "Barrel"));
             harassMenu.AddItem(new MenuItem("barrelCM", "Use in Combo").SetValue(true));
             harassMenu.AddItem(new MenuItem("radiusCM", "reduce connectionradius").SetValue(new Slider(50, 0, 150)));
+            harassMenu.AddItem(new MenuItem("autoBarrel", "Automatically passive Barrel").SetValue(true));
 
             harassMenu.AddItem(new MenuItem("barrelLC", "Use in LaneClear").SetValue(true));
             harassMenu.AddItem(new MenuItem("countLC", "How many barrels to use").SetValue(new Slider(1, 1, 4)));

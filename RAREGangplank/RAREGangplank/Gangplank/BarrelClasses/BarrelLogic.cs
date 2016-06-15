@@ -23,7 +23,6 @@ using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
-using Color = System.Drawing.Color;
 
 #endregion
 
@@ -34,12 +33,21 @@ namespace RAREGangplank.Gangplank.BarrelClasses
     {
         #region Fields and Constants
 
-        internal static float Rotation = 28*(float) Math.PI/180;
-
         /// <summary>
         ///   all placed barrels
         /// </summary>
         internal BarrelSpell barrel;
+
+        private float GetMaxCooldown()
+        {
+            if (barrel.Level > 0)
+                return float.MaxValue;
+
+            var cooldowns = new[] { 18f, 17f, 16f, 15f, 14f };
+            var barrelsCount = 2f + Gangplank.RSpell.Level;
+
+            return cooldowns[barrel.Level - 1] / barrelsCount;
+        }
 
         private int GetStacks => barrel.Instance.Ammo;
 
@@ -57,10 +65,10 @@ namespace RAREGangplank.Gangplank.BarrelClasses
         #region lambda
 
         private Barrel GetBarrelsInRange(Vector2 pos) =>
-            BarrelSpell.ActiveBarrels.FirstOrDefault(x => x.data.Distance(pos) <= barrel.ExplosionRadius);
+            BarrelSpell.ActiveBarrels.FirstOrDefault(x => x.Data.Distance(pos) <= barrel.ExplosionRadius);
 
         private int CountBarrelsInRange(Vector2 pos) =>
-            BarrelSpell.ActiveBarrels.Count(x => x.data.Distance(pos) <= barrel.ExplosionRadius);
+            BarrelSpell.ActiveBarrels.Count(x => x.Data.Distance(pos) <= barrel.ExplosionRadius);
 
         private static Vector2 PredPosRotate(float angle, Vector2 pos, Vector2 rotatePos) =>
             pos.RotateAroundPoint(rotatePos, angle);
@@ -76,47 +84,60 @@ namespace RAREGangplank.Gangplank.BarrelClasses
 
         public void HandleBarrel(Orbwalking.OrbwalkingMode orbMode)
         {
+
+            if (Utilities.GetMenuBool("autoBarrel"))
+            {
+                AutomaticBarrel();
+            }
+
             if (orbMode == Orbwalking.OrbwalkingMode.LaneClear && GMenu.MainMenu.Item("barrelLC").GetValue<bool>())
             {
-                // get the max count for placing the barrels
-                var count = GMenu.MainMenu.Item("countLC").GetValue<Slider>().Value;
                 // place the barrels with the function
-                PlaceBarrels(orbMode, count);
+                PlaceFarmBarrel(orbMode);
             }
 
             if (orbMode == Orbwalking.OrbwalkingMode.Combo && GMenu.MainMenu.Item("barrelCM").GetValue<bool>())
             {
                 // place the barrels with the function
-                PlaceBarrels(orbMode, int.MaxValue);
+                
             }
         }
 
-        private void PlaceBarrels(Orbwalking.OrbwalkingMode orbMode, int maxBarrels)
+        private void AutomaticBarrel()
         {
-            if (orbMode == Orbwalking.OrbwalkingMode.Combo)
+            var bushes = GetBushes(Gangplank.Player.Position);
+
+            var minions =
+                ObjectManager.Get<Obj_AI_Base>()
+                    .Where(x => x.IsValidTarget() && x.IsMinion && x.Distance(Gangplank.Player.Position) < barrel.Range).ToList();
+            var farmPos = barrel.GetBestLoc(minions);
+
+            if (farmPos.MinionsHit == 0 && bushes == null)
             {
-                /*
-                 * Just for testing proposes
-                 * VectorIdea.Clear();
 
-                var target = TargetSelector.GetTarget(barrel.Range, TargetSelector.DamageType.Physical, false);
-                if (target == null) return;
-                var pred = barrel.GetPrediction(target, true);
-
-                VectorIdea.Add(
-                    Gangplank.Player.Position.Extend(target.Position,
-                        target.Distance(Gangplank.Player.Position) - target.AttackRange)
-                        .To2D()
-                        .RotateAroundPoint(Gangplank.Player.Position.To2D(), Rotation)
-                        .To3D());
-                VectorIdea.Add(Gangplank.Player.Position.Extend(pred.CastPosition,
-                    pred.CastPosition.Distance(Gangplank.Player.Position) + barrel.ExplosionRadius/4f));
-                VectorIdea.Add(pred.CastPosition);
-                VectorIdea.Add(Gangplank.Player.Position.Extend(pred.CastPosition,
-                    pred.CastPosition.Distance(Gangplank.Player.Position) - barrel.ExplosionRadius /2f));*/
             }
-            else if (orbMode == Orbwalking.OrbwalkingMode.LaneClear)
+            else if (farmPos.MinionsHit >= Utilities.GetMenuValue("hitLC"))
             {
+                
+            }
+            else if (bushes != null)
+            {
+                
+            }
+        }
+
+        private List<GrassObject> GetBushes(Vector3 pos) =>
+            ObjectManager.Get<GrassObject>().Where(b => b.Position.Distance(pos) < barrel.Range).ToList();
+
+        private void PlaceFarmBarrel(Orbwalking.OrbwalkingMode orbMode)
+        {
+
+            //TODO: needs to be change to the optional vaule of available barrels
+
+            if (orbMode == Orbwalking.OrbwalkingMode.LaneClear)
+            {
+                var maxBarrels = GMenu.MainMenu.Item("countLC").GetValue<Slider>().Value;
+
                 // get all minions that are enemies and being in range of the E + 100 units
                 // order them by their current health
                 var minions = ObjectManager.Get<Obj_AI_Base>()
@@ -151,8 +172,8 @@ namespace RAREGangplank.Gangplank.BarrelClasses
                         var secminions = ObjectManager.Get<Obj_AI_Base>()
                             .Where(
                                 m =>
-                                    m.IsMinion && m.IsEnemy && barrelsInRange.data.Distance(m) > barrel.ExplosionRadius &&
-                                    barrelsInRange.data.Distance(m) < barrel.ConnectionRadius).ToList();
+                                    m.IsMinion && m.IsEnemy && barrelsInRange.Data.Distance(m) > barrel.ExplosionRadius &&
+                                    barrelsInRange.Data.Distance(m) < barrel.ConnectionRadius).ToList();
 
                         // spotting the best farm loc
                         var secFarm = GetBestLoc(secminions);
@@ -166,53 +187,6 @@ namespace RAREGangplank.Gangplank.BarrelClasses
                     }
                 }
             }
-        }
-
-        private void BarrelsDrawing(EventArgs args)
-        {
-            foreach (var barrelSlot in BarrelSpell.ActiveBarrels)
-            {
-                if (barrelSlot.data.Health >= 2)
-                    Render.Circle.DrawCircle(barrelSlot.data.Position, 200f, Color.Brown);
-
-                if (barrelSlot.data.Health <= 1)
-                    Render.Circle.DrawCircle(barrelSlot.data.Position, 200f, Color.Green);
-            }
-
-            foreach (var bush in BushInRange())
-            {
-                Render.Circle.DrawCircle(bush.Position, 200f, Color.AntiqueWhite);
-            }
-        }
-
-        internal float GetMaxCooldown()
-        {
-            if (barrel.Level > 0)
-                return float.MaxValue;
-
-            var cooldowns = new[] {18f, 17f, 16f, 15f, 14f};
-            var barrelsCount = 2f + Gangplank.RSpell.Level;
-
-            return cooldowns[barrel.Level - 1]/barrelsCount;
-        }
-
-        private MinionManager.FarmLocation GetBestLoc(List<Obj_AI_Base> baseList)
-        {
-            if (baseList == null)
-                return new MinionManager.FarmLocation(Vector2.Zero, -1);
-
-            var positions = MinionManager.GetMinionsPredictedPositions(baseList, barrel.Delay, barrel.Width,
-                barrel.Speed,
-                Gangplank.Player.Position, barrel.Range, false, SkillshotType.SkillshotCircle);
-
-            // uses the predicted position to get a good circular farm spot 
-            return MinionManager.GetBestCircularFarmLocation(positions, barrel.Width, barrel.Range);
-        }
-
-        private void CastBarrel(Vector2 pos)
-        {
-            if (pos.IsValid())
-                barrel.Cast(pos);
         }
 
         #endregion
