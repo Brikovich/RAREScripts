@@ -109,22 +109,27 @@ namespace RAREKarthus.ChampionModes
         {
 
             //checking if UltKS is enabled.
-            if (GameObjects.EnemyHeroes.Count( x => Utilities.Player.Distance(x) <= 500f ) <= 0 && (Utilities.MainMenu["R"]["KS"] || Utilities.MainMenu["R"]["Save"]))
+            if (GameObjects.EnemyHeroes.Count(x => Utilities.Player.Distance(x) <= 500f) <= 0
+                && (Utilities.MainMenu["R"]["KS"] || Utilities.MainMenu["R"]["Save"]))
+            {
                 //start ultks method
                 AutoUlt();
-
+            }
+                
             // check if ping notifying is enabled.
             if (Utilities.MainMenu["Utilities"]["NotifyPing"])
+            {
                 // for each player, who's killable with R gets pinged.
                 foreach (var enemy in GameObjects.EnemyHeroes.Where(
-                    t => ObjectManager.Player.Spellbook.CanUseSpell(SpellSlot.R) == SpellState.Ready &&
-                         Extensions.IsValidTarget(t) && Utilities.R.GetDamage(t) > t.Health &&
-                         t.Distance(ObjectManager.Player.Position) > Utilities.Q.Range))
+                        t => Utilities.R.IsReady() && Extensions.IsValidTarget(t) && 
+                        Utilities.R.GetDamage(t, DamageStage.Detonation) > t.Health &&
+                        t.Distance(ObjectManager.Player.Position) > Utilities.Q.Range))
                 {
                     Game.ShowPing(PingCategory.Danger, enemy);
                     //internal pings :D
                 }
-
+            }
+            
             if (Core.IsInPassiveForm())
             {
                 Combo();
@@ -216,16 +221,20 @@ namespace RAREKarthus.ChampionModes
         /// </summary>
         private static void AutoUlt()
         {
-            int count = 0;
+            int count = -1;
 
             if (Utilities.MainMenu["R"]["KS"])
             {
-                count = GameObjects.EnemyHeroes.Count(champ => champ.Health < Utilities.R.GetDamage(champ) * 0.20 && !champ.HasBuffOfType(BuffType.SpellShield) && Extensions.IsValidTarget(champ, Utilities.R.Range) && HealthPrediction.GetHealthPrediction(champ, 1500, 70) <= Utilities.R.GetDamage(champ, DamageStage.Detonation) && HealthPrediction.GetHealthPrediction(champ, 1500, 70) >= 100);
+                count = GameObjects.EnemyHeroes.Count(champ => champ.Health < Utilities.R.GetDamage(champ, DamageStage.Detonation) * 0.90 && 
+                    (!champ.HasBuffOfType(BuffType.SpellShield) || !champ.HasBuffOfType(BuffType.Invulnerability)) &&
+                        HealthPrediction.GetHealthPrediction(champ, 1500, 70) <= Utilities.R.GetDamage(champ, DamageStage.Detonation) && 
+                            HealthPrediction.GetHealthPrediction(champ, 1500, 70) >= 100);
             }
             else if (Utilities.MainMenu["R"]["Save"])
             {
-                count = GameObjects.EnemyHeroes.Count(champ => champ.Health < Utilities.R.GetDamage(champ) * 0.20
-                    && champ.CountEnemyHeroesInRange(250f) == 0 && !champ.HasBuffOfType(BuffType.SpellShield) && champ.IsValidTarget(Utilities.R.Range));
+                count = GameObjects.EnemyHeroes.Count(champ => champ.Health < Utilities.R.GetDamage(champ, DamageStage.Detonation) * 0.90
+                    && champ.CountEnemyHeroesInRange(250f) == 0 && (!champ.HasBuffOfType(BuffType.SpellShield) || !champ.HasBuffOfType(BuffType.Invulnerability)) 
+                        && champ.IsValidTarget(Utilities.R.Range));
             }
             
             if (count >= Utilities.MainMenu["R"]["CountKS"])
@@ -311,8 +320,97 @@ namespace RAREKarthus.ChampionModes
         /// </summary>
         private static void Harass()
         {
-            Combo();
-            LastHit();
+            Obj_AI_Base seltarget = Utilities.targetSelector.GetSelectedTarget();
+
+            if (Utilities.MainMenu["Q"]["HarassQ"])
+            {
+                if (seltarget == null)
+                {
+                    var target = Utilities.targetSelector.GetTargetNoCollision(Utilities.Q);
+                    if (target.IsValidTarget(Utilities.Q.Range) && !target.IsDead && target.IsValid)
+                    {
+                        var prediction = Utilities.Q.GetPrediction(target).CastPosition;
+                        Core.CastQ(target, prediction);
+                    }
+                }
+                else
+                {
+                    if (seltarget.IsValidTarget(Utilities.Q.Range) && !seltarget.IsDead && seltarget.IsValid)
+                    {
+                        var prediction = Utilities.Q.GetPrediction(seltarget, true, Utilities.Q.Range).CastPosition;
+                        Core.CastQ(seltarget, prediction);
+                    }
+                    else
+                    {
+                        var target = Utilities.targetSelector.GetTargetNoCollision(Utilities.Q);
+                        if (target.IsValidTarget(Utilities.Q.Range) && !target.IsDead && target.IsValid)
+                        {
+                            var prediction = Utilities.Q.GetPrediction(seltarget, true, Utilities.Q.Range).CastPosition;
+                            Core.CastQ(target, prediction);
+                        }
+                    }
+                }
+            }
+
+            if (Utilities.MainMenu["W"]["HarassW"])
+            {
+                if (seltarget == null)
+                {
+                    var target = Utilities.targetSelector.GetTargetNoCollision(Utilities.W);
+                    if (Extensions.IsValidTarget(target, Utilities.W.Range) && !target.IsDead && target.IsValid)
+                    {
+                        Core.CastW(target);
+                    }
+                }
+                else
+                {
+                    if (Extensions.IsValidTarget(seltarget, Utilities.W.Range) && !seltarget.IsDead && seltarget.IsValid)
+                    {
+                        Core.CastW(seltarget);
+                    }
+                    else
+                    {
+                        var target = Utilities.targetSelector.GetTargetNoCollision(Utilities.W);
+                        if (Extensions.IsValidTarget(target, Utilities.W.Range) && !target.IsDead && target.IsValid)
+                        {
+                            Core.CastW(target);
+                        }
+                    }
+                }
+            }
+
+            if (Utilities.MainMenu["E"]["HarassE"])
+            {
+                var target = Utilities.E.GetTarget();
+                EState(OrbwalkingMode.Combo, null, target);
+            }
+
+            if (!Utilities.MainMenu["Q"]["HarassQ"])
+                return;
+
+            // get all minions with costum equalations
+            var allMinions = GameObjects.EnemyMinions.Where(m => Utilities.Q.IsInRange(m));
+
+            // if minions is NOT empty or  there are any minions
+            var objAiMinions = allMinions as Obj_AI_Minion[] ?? allMinions.ToArray();
+            if (!objAiMinions.Any()) return;
+
+            //var minions = allMinions.OrderBy(i => i.Health).FirstOrDefault(); // => get first one or default.
+            foreach (
+                var minion in
+                    objAiMinions.Where(
+                        minion =>
+                            Extensions.IsValidTarget(minion, Utilities.Q.Range) && !minion.InAutoAttackRange() ||
+                            !minion.IsUnderAllyTurret()))
+            {
+                var hpred = HealthPrediction.GetHealthPrediction(minion, 1000);
+                if (minion != null && hpred < Core.GetQDamage(minion) && hpred > minion.Health - hpred * 2)
+                {
+                    var prediction = Utilities.Q.GetPrediction(minion, true, Utilities.Q.Range).CastPosition;
+                    Core.CastQ(minion, prediction, Utilities.MainMenu["Q"]["LastMana"]);
+                    // => CastQ on it, while refering on your mana.
+                }
+            }
         }
 
         /// <summary>
@@ -379,7 +477,7 @@ namespace RAREKarthus.ChampionModes
                             !minion.IsUnderAllyTurret()))
             {
                 var hpred = HealthPrediction.GetHealthPrediction(minion, 1000);
-                if (minion != null && hpred < Core.GetQDamage(minion) && hpred > minion.Health - hpred*2)
+                if (minion != null && hpred < Core.GetQDamage(minion) && hpred > minion.Health - hpred * 2)
                 {
                     var prediction = Utilities.Q.GetPrediction(minion, true, Utilities.Q.Range).CastPosition;
                     Core.CastQ(minion, prediction, Utilities.MainMenu["Q"]["LastMana"]);
@@ -471,12 +569,11 @@ namespace RAREKarthus.ChampionModes
 
             Utilities.Q.Width = GetDynamicWWidth(target);
 
-            if (pred == Vector3.Zero)
+            if (pred.IsValid())
             {
-                Utilities.Q.CastOnUnit(target);
+                Utilities.Q.Cast(pred);
             }
-
-            Utilities.Q.Cast(pred);
+            
         }
 
         private static float GetDynamicWWidth(Obj_AI_Base target)
@@ -517,11 +614,9 @@ namespace RAREKarthus.ChampionModes
         /// <param name="minManaPercent"></param>
         public static void CastW(Obj_AI_Base target, int minManaPercent = 0)
         {
-            if (!Utilities.W.IsReady() || !(GetManaPercent() >= minManaPercent))
+            if (!Utilities.W.IsReady() || !(GetManaPercent() >= minManaPercent) || target == null)
                 return;
-            if (target == null)
-                return;
-            //Utilities.W.Width = GetDynamicWWidth(target);
+            Utilities.W.Width = GetDynamicWWidth(target);
             Utilities.W.CastOnUnit(target);
         }
 
