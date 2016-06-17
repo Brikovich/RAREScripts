@@ -28,12 +28,19 @@ namespace RAREGangplank.Gangplank.BarrelClasses
     {
         #region Fields and Constants
 
+        /// <summary>
+        ///     stores all data about one barrel
+        /// </summary>
         internal Obj_AI_Base Data;
 
         #endregion
 
         #region Constructors
 
+        /// <summary>
+        ///     Constructor of our barrel
+        /// </summary>
+        /// <param name="mybase">its the object as itself</param>
         public Barrel(Obj_AI_Base mybase)
         {
             Data = mybase;

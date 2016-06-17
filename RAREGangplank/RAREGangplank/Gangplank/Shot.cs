@@ -23,15 +23,22 @@ using LeagueSharp.Common;
 using LeagueSharp.Data;
 using LeagueSharp.Data.DataTypes;
 using RAREGangplank.Gangplank.BarrelClasses;
+using RAREGangplank.Interfaces;
+using SharpDX;
 
 #endregion
 
 namespace RAREGangplank.Gangplank
 {
 
-    internal class Shot : Spell
+    internal class Shot : Spell, ISpell
     {
         #region Fields and Constants
+
+        /// <summary>
+        ///     The Barrel spell data
+        /// </summary>
+        private readonly BarrelSpell _barrelS;
 
         /// <summary>
         ///   The SpellDatabaseEntry for our W Spell
@@ -45,25 +52,67 @@ namespace RAREGangplank.Gangplank
 
         #region Constructors
 
+        /// <summary>
+        ///     a shotty constructor
+        /// </summary>
         public Shot() : base(SpellSlot.Q, SpellQEntry.Range, TargetSelector.DamageType.Physical)
         {
             SetTargetted(SpellQEntry.Delay, SpellQEntry.MissileSpeed);
+            _barrelS = new BarrelSpell();
         }
 
         #endregion
 
+        #region Interface
+
+        /// <summary>
+        ///     Gets the current spell damage
+        /// </summary>
+        /// <param name="target">target</param>
+        /// <returns></returns>
+        public double GetSpellDamage(Obj_AI_Base target)
+        {
+            return GetDamage(target);
+        }
+
+        /// <summary>
+        ///     casts your spell with a costum pos
+        /// </summary>
+        /// <param name="pos">position as Vector2</param>
+        /// <returns>a boolean that says if it has casted the skill or not</returns>
+        public bool CastSpell(Vector2 pos)
+        {
+            return Cast(pos);
+        }
+
+        /// <summary>
+        ///     casts your spell with a costum target
+        /// </summary>
+        /// <param name="target">target as Obj_AI_Base</param>
+        /// <returns>a boolean that says if it has casted the skill or not</returns>
+        public bool CastSpell(Obj_AI_Base target)
+        {
+            return Cast(target) == CastStates.SuccessfullyCasted;
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     
+        /// </summary>
+        /// <param name="orbMode"></param>
         public void HandleSpell(Orbwalking.OrbwalkingMode orbMode)
         {
             if (orbMode == Orbwalking.OrbwalkingMode.Combo && GMenu.MainMenu.Item("shotCM").GetValue<bool>())
             {
-                if (this.IsReady() && Barrel.Barrels != null)
+                if (this.IsReady() && BarrelSpell.ActiveBarrels != null)
                 {
-                    var barrel = Barrel.Barrels.FirstOrDefault(x => x.Health <= 1);
+                    var barrel = BarrelSpell.ActiveBarrels.FirstOrDefault(x => x.Data.Health <= 1);
 
-                    if (barrel != null && barrel.CountEnemiesInRange(Barrel.BarrelExplosionRadius) >= 1
-                        && Cooldown < Gangplank.BarrelSpell.GetMaxCooldown())
+                    if (barrel != null && barrel.Data.CountEnemiesInRange(BarrelSpell.ExplosionRadius) >= 1
+                        && Cooldown < _barrelS.GetMaxCooldown())
                     {
-                        CastOnUnit(barrel);
+                        CastOnUnit(barrel.Data);
                     }
                 }
             }
@@ -75,11 +124,11 @@ namespace RAREGangplank.Gangplank
                     .FirstOrDefault();
 
                 // check if any barrel is stored
-                if (Barrel.Barrels != null && Barrel.Barrels.Any(x => x.Health <= 1))
+                if (BarrelSpell.ActiveBarrels != null && BarrelSpell.ActiveBarrels.Any(x => x.Data.Health <= 1))
                 {
-                    var barrel = Barrel.Barrels.FirstOrDefault(x => x.Health <= 1);
+                    var barrel = BarrelSpell.ActiveBarrels.FirstOrDefault(x => x.Data.Health <= 1);
                     if (barrel != null)
-                        CastOnUnit(barrel);
+                        CastOnUnit(barrel.Data);
                 }
                 else if (minion != null)
                 {

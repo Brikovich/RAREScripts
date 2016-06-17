@@ -22,13 +22,15 @@ using LeagueSharp;
 using LeagueSharp.Common;
 using LeagueSharp.Data;
 using LeagueSharp.Data.DataTypes;
+using RAREGangplank.Interfaces;
+using SharpDX;
 
 #endregion
 
 namespace RAREGangplank.Gangplank
 {
 
-    internal class Citrus : Spell
+    internal class Citrus : Spell, ISpell
     {
         #region Fields and Constants
 
@@ -40,16 +42,26 @@ namespace RAREGangplank.Gangplank
                 Data.Get<SpellDatabase>()
                     .Spells.Single(spell => spell.ChampionName == "Gangplank" && spell.Slot == SpellSlot.W);
 
+        private readonly int[] heal = { 50, 75, 100, 125, 150 };
+
         #endregion
 
         #region Constructors
 
+        /// <summary>
+        ///     Constructor for our Citrus spell
+        /// </summary>
         public Citrus() : base(SpellSlot.W, SpellWEntry.Range, TargetSelector.DamageType.Magical)
         {
+            // not needed at all, but for initializing the inherited spell.
         }
 
         #endregion
 
+        /// <summary>
+        ///     Checks if the hero needs the citrus
+        /// </summary>
+        /// <returns>boolean that says if it's needed</returns>
         public bool PlayerNeedsCitrus()
         {
             var healthPercent = GMenu.MainMenu.Item("lifeCitrus").GetValue<Slider>().Value;
@@ -58,17 +70,36 @@ namespace RAREGangplank.Gangplank
                    && Gangplank.Player.Health < Gangplank.Player.MaxHealth*healthPercent;
         }
 
-        public double CirtusHeal()
+        /// <summary>
+        ///     get you the current healratio of your W Spell
+        /// </summary>
+        /// <returns>returns a float with the heal value </returns>
+        public double GetSpellDamage(Obj_AI_Base target)
         {
             double missingHealth = Gangplank.Player.MaxHealth - Gangplank.Player.Health;
-            int[] heal = {50, 75, 100, 125, 150};
-
+            
             if (Level >= 1)
             {
-                return heal[Level - 1] + missingHealth*0.15;
+                return heal[Level - 1] + missingHealth * 0.15;
             }
 
             return 0d;
+        }
+
+
+        public bool CastSpell(Vector2 pos)
+        {
+            return Cast();
+        }
+
+        /// <summary>
+        ///     casts your spell with a costum target
+        /// </summary>
+        /// <param name="target">target as Obj_AI_Base</param>
+        /// <returns>a boolean that says if it has casted the skill or not</returns>
+        public bool CastSpell(Obj_AI_Base target)
+        {
+            return Cast(target) == CastStates.SuccessfullyCasted;
         }
 
     }

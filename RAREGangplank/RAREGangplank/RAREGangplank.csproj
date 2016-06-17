@@ -67,6 +67,8 @@
     <Compile Include="Gangplank\Gangplank.cs" />
     <Compile Include="Gangplank\Shot.cs" />
     <Compile Include="GMenu.cs" />
+    <Compile Include="Interfaces\ISpell.cs" />
+    <Compile Include="Interfaces\ISpellLogic.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />

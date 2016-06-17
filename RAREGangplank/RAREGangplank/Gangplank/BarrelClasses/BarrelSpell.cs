@@ -24,6 +24,7 @@ using LeagueSharp;
 using LeagueSharp.Common;
 using LeagueSharp.Data;
 using LeagueSharp.Data.DataTypes;
+using RAREGangplank.Interfaces;
 using SharpDX;
 
 #endregion
@@ -31,21 +32,36 @@ using SharpDX;
 namespace RAREGangplank.Gangplank.BarrelClasses
 {
 
-    public class BarrelSpell : Spell
+    public class BarrelSpell : Spell, ISpell
     {
         #region Fields and Constants
 
         internal static List<Barrel> ActiveBarrels;
 
-        // internal static float Rotation = 28 * (float)Math.PI / 180;
+        internal static readonly int ConnectionRadius = 650;
 
-        internal readonly int ConnectionRadius = 650;
+        internal static readonly int ExplosionRadius = 400;
 
-        internal readonly int ExplosionRadius = 400;
+        /// <summary>
+        ///   gets the current stackcount
+        /// </summary>
+        internal int GetStacks => Instance.Ammo;
+
+        private readonly float[] _cooldowns = { 18F, 17F, 16F, 15F, 14F };
 
         private static SpellDatabaseEntry SpellEEntry =>
             Data.Get<SpellDatabase>()
                 .Spells.Single(spell => spell.ChampionName == "Gangplank" && spell.Slot == SpellSlot.E);
+
+       internal float GetMaxCooldown()
+        {
+            if (Level > 0)
+                return float.MaxValue;
+            
+            var barrelsCount = 2f + Gangplank.RSpell.Level;
+
+            return _cooldowns[Level - 1] / barrelsCount;
+        }
 
         #endregion
 
@@ -95,14 +111,21 @@ namespace RAREGangplank.Gangplank.BarrelClasses
             return MinionManager.GetBestCircularFarmLocation(positions, Width, Range);
         }
 
-        private void CastBarrel(Vector2 pos)
+        public double GetSpellDamage(Obj_AI_Base target)
         {
-            if (pos.IsValid())
-            {
-                Cast(pos);
-            }
-                
+            return GetDamage(target);
         }
+
+        public bool CastSpell(Vector2 pos)
+        {
+            return Cast(pos);
+        }
+
+        public bool CastSpell(Obj_AI_Base target)
+        {
+            return Cast(target) == CastStates.SuccessfullyCasted;
+        }
+
     }
 
 }

@@ -44,7 +44,7 @@ namespace RAREGangplank.Gangplank
         /// <summary>
         ///   Variable for holding the BarrelSpell
         /// </summary>
-        internal static Barrel BarrelSpell;
+        internal static BarrelLogic BarrelLogic;
 
         internal static Citrus CitrusSpell;
 
@@ -68,7 +68,7 @@ namespace RAREGangplank.Gangplank
                 return;
 
             // init spells
-            BarrelSpell = new Barrel();
+            BarrelLogic = new BarrelLogic();
             CitrusSpell = new Citrus();
             ShotSpell = new Shot();
             RSpell = new Spell(SpellSlot.R);
@@ -93,11 +93,11 @@ namespace RAREGangplank.Gangplank
             switch (OrbW.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.LaneClear:
-                    BarrelSpell.HandleBarrel(OrbW.ActiveMode);
+                    BarrelLogic.HandleBarrel(OrbW.ActiveMode);
                     ShotSpell.HandleSpell(OrbW.ActiveMode);
                     break;
                 case Orbwalking.OrbwalkingMode.Combo:
-                    BarrelSpell.HandleBarrel(OrbW.ActiveMode);
+                    BarrelLogic.HandleBarrel(OrbW.ActiveMode);
                     ShotSpell.HandleSpell(OrbW.ActiveMode);
                     break;
             }
@@ -116,8 +116,8 @@ namespace RAREGangplank.Gangplank
             if (ShotSpell.Level >= 1 && drawQ.Active)
                 Render.Circle.DrawCircle(Player.Position, ShotSpell.Range, drawQ.Color);
 
-            if (BarrelSpell.Level >= 1 && drawE.Active)
-                Render.Circle.DrawCircle(Player.Position, BarrelSpell.Range, drawE.Color);
+            if (BarrelLogic.barrel.Level >= 1 && drawE.Active)
+                Render.Circle.DrawCircle(Player.Position, BarrelLogic.barrel.Range, drawE.Color);
         }
 
         private float GetComboDamage(Obj_AI_Base target)
@@ -132,8 +132,8 @@ namespace RAREGangplank.Gangplank
 
             if (ShotSpell.IsReady())
                 spelllist.Add(ShotSpell.Slot);
-            if (BarrelSpell.IsReady())
-                spelllist.Add(BarrelSpell.Slot);
+            if (BarrelLogic.barrel.IsReady())
+                spelllist.Add(BarrelLogic.barrel.Slot);
             if (CitrusSpell.IsReady())
                 spelllist.Add(CitrusSpell.Slot);
 
