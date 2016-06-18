@@ -64,6 +64,7 @@ namespace RARETwistedFate.TwistedFate
             {
                 CardManager.HandleCards(OrbwalkingMode.Combo, true);
             }
+            
         }
 
         private void DrawingOnOnDraw(EventArgs args)

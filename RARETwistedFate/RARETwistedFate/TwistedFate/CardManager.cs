@@ -111,12 +111,6 @@ namespace RARETwistedFate.TwistedFate
             if (ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).Name == "PickACard")
             {
                 SpellW.Cast();
-                
-                //while (castedCard)
-                //{
-                //    castedCard = !PickCard(ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).Name,
-                //        GetCardfromString(MenuTwisted.MainMenu["R"]["ActiveCard"].ToString()));
-                //}
             }
             NeedToCastW = true;
         }
@@ -129,6 +123,7 @@ namespace RARETwistedFate.TwistedFate
                          GameObjects.EnemyTurrets.Count(t => GameObjects.Player.Distance(t) <= SpellW.Range + 200);
 
             var countj = GameObjects.Jungle.Count(z => GameObjects.Player.Distance(z) <= SpellW.Range + 200);
+            string name = ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).Name;
 
             if (urgent && orbMode == OrbwalkingMode.Combo)
             {
@@ -136,7 +131,7 @@ namespace RARETwistedFate.TwistedFate
                 return;
             }
 
-            if (orbMode == OrbwalkingMode.Combo && IsOn(orbMode) && counth > 0)
+            if (orbMode == OrbwalkingMode.Combo && IsOn(orbMode) && (counth > 0 || name != "PickACard"))
             {
                 PickCard(GetActiveCardCombo());
             }
