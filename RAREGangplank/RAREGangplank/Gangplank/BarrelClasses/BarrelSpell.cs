@@ -36,7 +36,7 @@ namespace RAREGangplank.Gangplank.BarrelClasses
     {
         #region Fields and Constants
 
-        internal static List<Barrel> ActiveBarrels;
+        internal List<Barrel> ActiveBarrels;
 
         internal static readonly int ConnectionRadius = 650;
 

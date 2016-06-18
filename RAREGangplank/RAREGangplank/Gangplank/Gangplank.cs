@@ -44,7 +44,7 @@ namespace RAREGangplank.Gangplank
         /// <summary>
         ///   Variable for holding the BarrelSpell
         /// </summary>
-        internal static BarrelLogic BarrelLogic;
+        internal static BarrelLogic barrelLogic;
 
         internal static Citrus CitrusSpell;
 
@@ -68,7 +68,7 @@ namespace RAREGangplank.Gangplank
                 return;
 
             // init spells
-            BarrelLogic = new BarrelLogic();
+            barrelLogic = new BarrelLogic();
             CitrusSpell = new Citrus();
             ShotSpell = new Shot();
             RSpell = new Spell(SpellSlot.R);
@@ -90,14 +90,15 @@ namespace RAREGangplank.Gangplank
         /// <param name="args"></param>
         private void Game_OnUpdate(EventArgs args)
         {
+            barrelLogic.AutomaticBarrel();
             switch (OrbW.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.LaneClear:
-                    BarrelLogic.HandleBarrel(OrbW.ActiveMode);
+                    barrelLogic.PlaceFarmBarrel();
                     ShotSpell.HandleSpell(OrbW.ActiveMode);
                     break;
                 case Orbwalking.OrbwalkingMode.Combo:
-                    BarrelLogic.HandleBarrel(OrbW.ActiveMode);
+                    barrelLogic.PlaceComboBarrel();
                     ShotSpell.HandleSpell(OrbW.ActiveMode);
                     break;
             }
@@ -116,8 +117,8 @@ namespace RAREGangplank.Gangplank
             if (ShotSpell.Level >= 1 && drawQ.Active)
                 Render.Circle.DrawCircle(Player.Position, ShotSpell.Range, drawQ.Color);
 
-            if (BarrelLogic.barrel.Level >= 1 && drawE.Active)
-                Render.Circle.DrawCircle(Player.Position, BarrelLogic.barrel.Range, drawE.Color);
+            if (barrelLogic.barrel.Level >= 1 && drawE.Active)
+                Render.Circle.DrawCircle(Player.Position, barrelLogic.barrel.Range, drawE.Color);
         }
 
         private float GetComboDamage(Obj_AI_Base target)
@@ -132,8 +133,8 @@ namespace RAREGangplank.Gangplank
 
             if (ShotSpell.IsReady())
                 spelllist.Add(ShotSpell.Slot);
-            if (BarrelLogic.barrel.IsReady())
-                spelllist.Add(BarrelLogic.barrel.Slot);
+            if (barrelLogic.barrel.IsReady())
+                spelllist.Add(barrelLogic.barrel.Slot);
             if (CitrusSpell.IsReady())
                 spelllist.Add(CitrusSpell.Slot);
 

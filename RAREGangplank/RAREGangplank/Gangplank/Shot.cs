@@ -57,7 +57,7 @@ namespace RAREGangplank.Gangplank
         /// </summary>
         public Shot() : base(SpellSlot.Q, SpellQEntry.Range, TargetSelector.DamageType.Physical)
         {
-            SetTargetted(SpellQEntry.Delay, SpellQEntry.MissileSpeed);
+            SetTargetted(SpellQEntry.Delay/1000f, SpellQEntry.MissileSpeed);
             _barrelS = new BarrelSpell();
         }
 
@@ -105,9 +105,9 @@ namespace RAREGangplank.Gangplank
         {
             if (orbMode == Orbwalking.OrbwalkingMode.Combo && GMenu.MainMenu.Item("shotCM").GetValue<bool>())
             {
-                if (this.IsReady() && BarrelSpell.ActiveBarrels != null)
+                if (this.IsReady() && _barrelS.ActiveBarrels != null)
                 {
-                    var barrel = BarrelSpell.ActiveBarrels.FirstOrDefault(x => x.Data.Health <= 1);
+                    var barrel = _barrelS.ActiveBarrels.FirstOrDefault(x => x.Data.Health <= 1);
 
                     if (barrel != null && barrel.Data.CountEnemiesInRange(BarrelSpell.ExplosionRadius) >= 1
                         && Cooldown < _barrelS.GetMaxCooldown())
@@ -124,9 +124,9 @@ namespace RAREGangplank.Gangplank
                     .FirstOrDefault();
 
                 // check if any barrel is stored
-                if (BarrelSpell.ActiveBarrels != null && BarrelSpell.ActiveBarrels.Any(x => x.Data.Health <= 1))
+                if (_barrelS.ActiveBarrels != null && _barrelS.ActiveBarrels.Any(x => x.Data.Health <= 1))
                 {
-                    var barrel = BarrelSpell.ActiveBarrels.FirstOrDefault(x => x.Data.Health <= 1);
+                    var barrel = _barrelS.ActiveBarrels.FirstOrDefault(x => x.Data.Health <= 1);
                     if (barrel != null)
                         CastOnUnit(barrel.Data);
                 }
