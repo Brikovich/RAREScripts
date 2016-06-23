@@ -91,7 +91,10 @@ namespace RARETwistedFate.TwistedFate
             {
                 case OrbwalkingMode.Combo:
                     CardManager.HandleCards(Variables.Orbwalker.ActiveMode, false);
-                    CardShot.HandleQ(Variables.Orbwalker.ActiveMode);
+                    if (!MenuTwisted.MainMenu["Q"]["OnlyImmoQ"])
+                    {
+                        CardShot.HandleQ(Variables.Orbwalker.ActiveMode);
+                    }
                     break;
 
                 case OrbwalkingMode.Hybrid:

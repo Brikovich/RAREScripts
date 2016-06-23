@@ -17,7 +17,9 @@
 
 #region usages
 
+using System;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using LeagueSharp;
 using LeagueSharp.Common;
 using LeagueSharp.Data;
@@ -59,9 +61,30 @@ namespace RAREGangplank.Gangplank
         {
             SetTargetted(SpellQEntry.Delay/1000f, SpellQEntry.MissileSpeed);
             _barrelS = new BarrelSpell();
+
+            Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
         }
 
         #endregion
+
+        private void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (sender.IsMe && args.Slot == SpellSlot.E)
+            {
+                Console.WriteLine("SpellE is called");
+                if (_barrelS.GetStacks == 1)
+                {
+                    var barrel = _barrelS.activeBarrels.Where(x => x.Data.Health <= 1)
+                        .OrderByDescending(y => y.Data.Distance(Gangplank.Player)).ToList();
+                    var bases = ObjectManager.Get<Obj_AI_Base>().Where(x => x.IsValid && x.IsValidTarget(2000f) && !x.isBarrel()).ToList();
+
+                    Console.WriteLine("BarrelFound!");
+                    Console.WriteLine("Cast on barrel");
+                    Cast(barrel.First().Data);
+                    
+                }
+            }
+        }
 
         #region Interface
 
@@ -103,11 +126,11 @@ namespace RAREGangplank.Gangplank
         /// <param name="orbMode"></param>
         public void HandleSpell(Orbwalking.OrbwalkingMode orbMode)
         {
-            if (orbMode == Orbwalking.OrbwalkingMode.Combo && GMenu.MainMenu.Item("shotCM").GetValue<bool>())
+            /*if (orbMode == Orbwalking.OrbwalkingMode.Combo && GMenu.MainMenu.Item("shotCM").GetValue<bool>())
             {
-                if (this.IsReady() && _barrelS.ActiveBarrels != null)
+                if (this.IsReady() && _barrelS.activeBarrels != null)
                 {
-                    var barrel = _barrelS.ActiveBarrels.FirstOrDefault(x => x.Data.Health <= 1);
+                    var barrel = _barrelS.activeBarrels.FirstOrDefault(x => x.Data.Health <= 1);
 
                     if (barrel != null && barrel.Data.CountEnemiesInRange(BarrelSpell.ExplosionRadius) >= 1
                         && Cooldown < _barrelS.GetMaxCooldown())
@@ -116,21 +139,24 @@ namespace RAREGangplank.Gangplank
                     }
                 }
             }
-            else if (orbMode == Orbwalking.OrbwalkingMode.LaneClear && GMenu.MainMenu.Item("shotLC").GetValue<bool>())
+            else */
+
+            if (orbMode == Orbwalking.OrbwalkingMode.LaneClear && GMenu.MainMenu.Item("shotLC").GetValue<bool>())
             {
                 var minion = ObjectManager.Get<Obj_AI_Minion>()
-                    .Where(x => x.IsValid && IsInRange(x) && x.IsTargetable && x.Health <= GetDamage(x))
+                    .Where(x => x.IsValid && IsInRange(x) && x.IsTargetable && x.Health <= GetDamage(x) && !x.isBarrel())
                     .OrderByDescending(y => y.Health)
                     .FirstOrDefault();
 
-                // check if any barrel is stored
-                if (_barrelS.ActiveBarrels != null && _barrelS.ActiveBarrels.Any(x => x.Data.Health <= 1))
+                /*// check if any barrel is stored
+                if (_barrelS.activeBarrels != null && _barrelS.activeBarrels.Any(x => x.Data.Health <= 1))
                 {
-                    var barrel = _barrelS.ActiveBarrels.FirstOrDefault(x => x.Data.Health <= 1);
+                    var barrel = _barrelS.activeBarrels.FirstOrDefault(x => x.Data.Health <= 1);
                     if (barrel != null)
                         CastOnUnit(barrel.Data);
                 }
-                else if (minion != null)
+                else*/
+                if (minion != null)
                 {
                     CastOnUnit(minion);
                 }

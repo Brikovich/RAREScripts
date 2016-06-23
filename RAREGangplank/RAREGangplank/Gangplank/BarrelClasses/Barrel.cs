@@ -18,17 +18,18 @@
 #region usages
 
 using LeagueSharp;
+using LeagueSharp.Common;
 
 #endregion
 
 namespace RAREGangplank.Gangplank.BarrelClasses
 {
 
-    internal class Barrel
+    public class Barrel
     {
         #region Fields and Constants
 
-        /// <summary>
+       /// <summary>
         ///     stores all data about one barrel
         /// </summary>
         internal Obj_AI_Base Data;

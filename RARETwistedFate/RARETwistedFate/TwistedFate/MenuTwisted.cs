@@ -43,8 +43,14 @@ namespace RARETwistedFate.TwistedFate
                 qMenu.Bool("ComboQ", "Use Q");
                 qMenu.Separator("Hybrid");
                 qMenu.Bool("HybridQ", "Use Q");
-                qMenu.Separator("Farm // LastHit");
-                qMenu.Bool("FarmQ", "Use Q", false);
+                qMenu.Separator("Farm");
+                qMenu.Bool("FarmQ", "Use Q");
+                qMenu.Separator("LastHit");
+                qMenu.Bool("LastQ", "Use Q", false);
+                qMenu.Separator("Utils");
+                qMenu.Bool("ImmoQ", "Auto Q on immobile");
+                qMenu.Bool("OnlyImmoQ", "Only auto Q on immobile", false);
+
             }
 
             var wMenu = MainMenu.Add(new Menu("W", "W spell"));

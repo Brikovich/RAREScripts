@@ -17,10 +17,17 @@
 
 #region usages
 
+using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using LeagueSharp;
+using LeagueSharp.Common;
 using LeagueSharp.SDK;
 using LeagueSharp.SDK.Enumerations;
+using LeagueSharp.SDK.MoreLinq;
+using HitChance = LeagueSharp.SDK.Enumerations.HitChance;
+using SkillshotType = LeagueSharp.SDK.Enumerations.SkillshotType;
+using Spell = LeagueSharp.SDK.Spell;
 
 #endregion
 
@@ -35,6 +42,32 @@ namespace RARETwistedFate.TwistedFate
             SpellQ = new Spell(SpellSlot.Q, 1450);
             SpellQ.SetSkillshot(250, 50, 1000, true, SkillshotType.SkillshotLine);
             SpellQ.MinHitChance = HitChance.Medium;
+            Game.OnUpdate += Game_OnUpdate;
+        }
+
+        private void Game_OnUpdate(EventArgs args)
+        {
+            if (MenuTwisted.MainMenu["Q"]["ImmoQ"])
+            {
+                CheckForImmobiles();
+            }
+        }
+
+        public void CheckForImmobiles()
+        {
+            var heros = ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsEnemy && h.Distance(GameObjects.Player) <= SpellQ.Range);
+
+            foreach (var objAiHero in heros)
+            {
+                if ((objAiHero.HasBuffOfType(BuffType.Charm) || objAiHero.HasBuffOfType(BuffType.Stun) || objAiHero.HasBuffOfType(BuffType.Knockup) ||
+                    objAiHero.HasBuffOfType(BuffType.Snare) ) && Extensions.IsValidTarget(objAiHero, SpellQ.Range))
+                {
+                    Console.WriteLine("Cast on immo");
+                    var pred = SpellQ.GetPrediction(objAiHero).CastPosition;
+                    SpellQ.Cast(pred);
+                }
+            }
+
         }
 
         public void HandleQ(OrbwalkingMode orbMode)
@@ -44,9 +77,10 @@ namespace RARETwistedFate.TwistedFate
                 var heroes = Variables.TargetSelector.GetTargets(SpellQ.Range, DamageType.Magical, false);
                 foreach (var hero in heroes)
                 {
-                    if (hero.IsValidTarget(SpellQ.Range) && !hero.IsDead)
+                    if (SpellQ.IsReady() && SpellQ.IsInRange(hero))
                     {
-                        SpellQ.CastIfHitchanceMinimum(heroes.FirstOrDefault(), HitChance.High);
+                        var pred = SpellQ.GetPrediction(hero).CastPosition;
+                        SpellQ.Cast(pred);
                     }
                 }
                     
@@ -89,11 +123,11 @@ namespace RARETwistedFate.TwistedFate
                 case OrbwalkingMode.Combo:
                     return MenuTwisted.MainMenu["Q"]["ComboQ"];
                 case OrbwalkingMode.LastHit:
-                    return MenuTwisted.MainMenu["Q"]["FarmQ"];
+                    return MenuTwisted.MainMenu["Q"]["LastQ"];
                 case OrbwalkingMode.Hybrid:
                     return MenuTwisted.MainMenu["Q"]["HybridQ"];
                 case OrbwalkingMode.LaneClear:
-                    return MenuTwisted.MainMenu["Q"]["HybridQ"];
+                    return MenuTwisted.MainMenu["Q"]["FarmQ"];
             }
 
             return false;

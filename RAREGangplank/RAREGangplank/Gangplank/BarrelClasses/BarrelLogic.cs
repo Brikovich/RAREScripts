@@ -23,12 +23,23 @@ using System.Diagnostics;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
+using RAREGangplank;
+using RAREGangplank.Gangplank;
+using RAREGangplank.Gangplank.BarrelClasses;
 using SharpDX;
+using Utilities = SharpDX.Utilities;
 
 #endregion
 
 namespace RAREGangplank.Gangplank.BarrelClasses
 {
+
+    internal enum BarrelMode
+    {
+        None,
+        FarmMode,
+        Combo
+    }
 
     internal class BarrelLogic
     {
@@ -43,6 +54,8 @@ namespace RAREGangplank.Gangplank.BarrelClasses
 
         internal static float QRange = 625;
 
+        internal static BarrelMode currentMode;
+
         #endregion
 
         #region Constructors
@@ -53,11 +66,11 @@ namespace RAREGangplank.Gangplank.BarrelClasses
         public BarrelLogic()
         {
             barrel = new BarrelSpell();
+            currentMode = BarrelMode.None;
         }
 
         #endregion
 
-        
         #region lambda
 
         /// <summary>
@@ -70,14 +83,14 @@ namespace RAREGangplank.Gangplank.BarrelClasses
         {
             try
             {
-                return barrel.ActiveBarrels.FirstOrDefault(x => x.Data.Distance(pos) <= range);
+                return barrel.activeBarrels.FirstOrDefault(x => x.Data.Distance(pos) <= range);
             }
             catch (Exception)
             {
                 return null;
             }
         }
-            
+
 
         /// <summary>
         ///   Counts the barrels in range
@@ -89,23 +102,32 @@ namespace RAREGangplank.Gangplank.BarrelClasses
         {
             try
             {
-                return barrel.ActiveBarrels.Count(x => x.Data.Distance(pos) <= range);
+                return barrel.activeBarrels.Count(x => x.Data.Distance(pos) <= range);
             }
             catch (Exception)
             {
                 return 0;
             }
-            
         }
-            
+
 
         /// <summary>
         ///   Returns all bushes in BarrelRange
         /// </summary>
         /// <param name="pos">from where</param>
         /// <returns>a list of GrassObjects</returns>
-        private List<GrassObject> GetBushes(Vector3 pos) =>
-            ObjectManager.Get<GrassObject>().Where(b => b.Position.Distance(pos) < barrel.Range).ToList();
+        private List<GrassObject> GetBushes(Vector3 pos)
+        {
+            try
+            {
+                return ObjectManager.Get<GrassObject>().Where(b => b.Position.Distance(pos) < barrel.Range).ToList();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+            
 
         #endregion
 
@@ -117,9 +139,7 @@ namespace RAREGangplank.Gangplank.BarrelClasses
         internal void AutomaticBarrel()
         {
             var bushes = GetBushes(Gangplank.Player.Position);
-            var minions = ObjectManager.Get<Obj_AI_Base>()
-                    .Where(x => x.IsValidTarget() && x.IsMinion && x.Distance(Gangplank.Player.Position) < barrel.Range)
-                    .ToList();
+            var minions = ObjectManager.Get<Obj_AI_Base>().Where(x => x.IsValidTarget() && x.IsMinion && x.Distance(Gangplank.Player.Position) < barrel.Range).ToList();
             var farmPos = barrel.GetBestLoc(minions);
             var targets = ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsValid && x.IsValidTarget(barrel.Range)).OrderByDescending(x => x.Distance(Gangplank.Player)).ToList();
             var target = TargetSelector.GetTarget(2000f, TargetSelector.DamageType.Physical);
@@ -139,24 +159,17 @@ namespace RAREGangplank.Gangplank.BarrelClasses
                 {
                     try
                     {
-                        var bush =
-                        bushes.Single(
-                            x => x.Position.Distance(Gangplank.Player.Position) > BarrelSpell.ExplosionRadius &&
-                                 x.Position.Distance(Gangplank.Player.Position) < BarrelSpell.ExplosionRadius * 2);
-                        if (bush != null)
-                        {
-                            barrel.Cast(bush.Position);
-                        }
+                        var bush = bushes.Where(x => x.Position.Distance(Gangplank.Player.Position) > BarrelSpell.ExplosionRadius && 
+                            x.Position.Distance(Gangplank.Player.Position) < BarrelSpell.ExplosionRadius*2).ToList();
+
+                        barrel.Cast(bush.First().Position);
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine($"{DateTime.Now} => {e.Message}");
+                        // ignored
                     }
-                    
-                    
                 }
-            } 
-            
+            }
         }
 
         /// <summary>
@@ -169,9 +182,7 @@ namespace RAREGangplank.Gangplank.BarrelClasses
 
             // get all minions that are enemies and being in range of the E + 100 units
             // order them by their current health
-            var minions = ObjectManager.Get<Obj_AI_Base>()
-                .Where(m => m.IsMinion && m.IsEnemy && m.Distance(Gangplank.Player.Position) <= barrel.Range + 100)
-                .OrderByDescending(m => m.Health).ToList();
+            var minions = ObjectManager.Get<Obj_AI_Base>().Where(m => m.IsMinion && m.IsEnemy && m.Distance(Gangplank.Player.Position) <= barrel.Range + 100).OrderByDescending(m => m.Health).ToList();
 
             // spotting the best farm loc
             var bestFarm = barrel.GetBestLoc(minions);
@@ -198,18 +209,13 @@ namespace RAREGangplank.Gangplank.BarrelClasses
 
                     // get the minions near to our barrel (230 < x < 660)
                     // so between the explosion range and the max connection range
-                    var secminions = ObjectManager.Get<Obj_AI_Base>()
-                        .Where(
-                            m =>
-                                m.IsMinion && m.IsEnemy && barrelInRange.Data.Distance(m) > BarrelSpell.ExplosionRadius &&
-                                barrelInRange.Data.Distance(m) < BarrelSpell.ConnectionRadius).ToList();
+                    var secminions = ObjectManager.Get<Obj_AI_Base>().Where(m => m.IsMinion && m.IsEnemy && barrelInRange.Data.Distance(m) > BarrelSpell.ExplosionRadius && barrelInRange.Data.Distance(m) < BarrelSpell.ConnectionRadius).ToList();
 
                     // spotting the best farm loc
                     var secFarm = barrel.GetBestLoc(secminions);
 
                     // checking if the farmLoc is valid for us
-                    if (secFarm.Position != Vector2.Zero &&
-                        Gangplank.Player.Distance(secFarm.Position) <= barrel.Range)
+                    if (secFarm.Position != Vector2.Zero && Gangplank.Player.Distance(secFarm.Position) <= barrel.Range)
                     {
                         barrel.Cast(secFarm.Position);
                     }
@@ -219,6 +225,7 @@ namespace RAREGangplank.Gangplank.BarrelClasses
 
         internal void PlaceComboBarrel()
         {
+            BarrelLogic.currentMode = BarrelMode.Combo;
             var target = TargetSelector.GetTarget(barrel.Range, TargetSelector.DamageType.Physical, false);
             var myPos = Gangplank.Player.Position.To2D();
             var barrelInRange = GetBarrelInRange(myPos, barrel.Range);
@@ -228,34 +235,25 @@ namespace RAREGangplank.Gangplank.BarrelClasses
             {
                 // no ? then get one :P
                 AutomaticBarrel();
-                return;
             }
             else
             {
-
-                if (barrel.GetStacks - 1 == 1)
+                if (barrel.GetStacks == 1)
                 {
                     SingleBarrelCombo(barrelInRange, target);
                 }
-                else if (barrel.GetStacks - 1 == 2)
+                else if (barrel.GetStacks >= 2)
                 {
                     DoubleBarrelCombo();
                 }
-                else if (barrel.GetStacks - 1 >= 3)
-                {
-
-                }
             }
-            
-
         }
 
         private void DoubleBarrelCombo()
         {
             // double barrel combo :) 
             // get barrel in range ?!
-            var barrelInRange =
-                barrel.ActiveBarrels.Single(x => x.Data.Distance(Gangplank.Player.Position) <= barrel.Range);
+            var barrelInRange = barrel.activeBarrels.First(x => x.Data.Distance(Gangplank.Player.Position) <= barrel.Range);
             if (barrelInRange == null)
             {
                 AutomaticBarrel();
@@ -267,28 +265,23 @@ namespace RAREGangplank.Gangplank.BarrelClasses
                 var target = TargetSelector.GetTarget(barrel.Range, TargetSelector.DamageType.Physical, false);
                 var distance = barrelInRange.Data.Distance(target);
 
-                if (target != null && barrelInRange.Data.Distance(Gangplank.Player) > QRange &&
-                    distance < (BarrelSpell.ConnectionRadius*2 - BarrelSpell.ExplosionRadius))
+                if (target != null && barrelInRange.Data.Distance(Gangplank.Player) > QRange && distance < (BarrelSpell.ConnectionRadius*2 - BarrelSpell.ExplosionRadius))
                 {
                     // between ~ 1000 to 660 range => ONE must be max ranged to the passive one to get to the 
                     // target properly
-                    if (distance < BarrelSpell.ConnectionRadius*2 - BarrelSpell.ExplosionRadius &&
-                        distance > BarrelSpell.ConnectionRadius)
+                    if (distance < BarrelSpell.ConnectionRadius*2 - BarrelSpell.ExplosionRadius && distance > BarrelSpell.ConnectionRadius)
                     {
                         var castpos = barrelInRange.Data.Position.Extend(target.Position, BarrelSpell.ConnectionRadius);
                         barrel.Cast(castpos);
-                        Utility.DelayAction.Add((int)Math.Round(barrel.Cooldown*1000,0), () =>
+                        Utility.DelayAction.Add((int) Math.Round(barrel.Cooldown*1000, 0), () =>
                         {
-                            var nearestBarrel = barrel.ActiveBarrels.OrderByDescending(x => x.Data.Distance(target)).FirstOrDefault();
+                            var nearestBarrel = barrel.activeBarrels.OrderByDescending(x => x.Data.Distance(target)).FirstOrDefault();
                             if (nearestBarrel != null)
                             {
-                                barrel.Cast(castpos.Extend(target.Position,
-                                    castpos.Distance(nearestBarrel.Data.Position)));
+                                barrel.Cast(castpos.Extend(target.Position, castpos.Distance(nearestBarrel.Data.Position)));
                             }
-                                
                         });
                     }
-                    
                 }
                 else
                 {
@@ -308,6 +301,7 @@ namespace RAREGangplank.Gangplank.BarrelClasses
                 barrel.CastSpell(cast.To2D());
             }
         }
+
         #endregion
     }
 

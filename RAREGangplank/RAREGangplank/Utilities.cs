@@ -18,6 +18,7 @@
 #region usages
 
 using System.Collections.Generic;
+using LeagueSharp;
 using LeagueSharp.Common;
 using LeagueSharp.Data.Enumerations;
 
@@ -26,7 +27,7 @@ using LeagueSharp.Data.Enumerations;
 namespace RAREGangplank
 {
 
-    internal class Utilities
+    internal static class Utilities
     {
 
         /// <summary>
@@ -55,6 +56,14 @@ namespace RAREGangplank
         /// <returns>int that returns the items current value</returns>
         public static int GetMenuValue(string name) => GMenu.MainMenu.Item(name).GetValue<Slider>().Value;
 
+        internal static bool isBarrel(this Obj_AI_Base baseObj)
+        {
+            if (baseObj.Name.Contains("barrel"))
+            {
+                return true;
+            }
+            return false;
+        }
     }
 
 }

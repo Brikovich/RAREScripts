@@ -94,10 +94,12 @@ namespace RAREGangplank.Gangplank
             switch (OrbW.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.LaneClear:
+                    BarrelLogic.currentMode = BarrelMode.FarmMode;
                     barrelLogic.PlaceFarmBarrel();
                     ShotSpell.HandleSpell(OrbW.ActiveMode);
                     break;
                 case Orbwalking.OrbwalkingMode.Combo:
+                    BarrelLogic.currentMode = BarrelMode.Combo;
                     barrelLogic.PlaceComboBarrel();
                     ShotSpell.HandleSpell(OrbW.ActiveMode);
                     break;

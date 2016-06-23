@@ -36,7 +36,7 @@ namespace RAREGangplank.Gangplank.BarrelClasses
     {
         #region Fields and Constants
 
-        internal List<Barrel> ActiveBarrels;
+        internal List<Barrel> activeBarrels;
 
         internal static readonly int ConnectionRadius = 650;
 
@@ -72,6 +72,8 @@ namespace RAREGangplank.Gangplank.BarrelClasses
             SetSkillshot(SpellEEntry.Delay/1000f, SpellEEntry.Width, SpellEEntry.MissileSpeed,
                 SpellEEntry.CollisionObjects.Any(), Utilities.ConvertToSkillshotType(SpellEEntry.SpellType));
 
+            activeBarrels = new List<Barrel>();
+
             GameObject.OnCreate += GameObject_OnCreate;
             GameObject.OnDelete += GameObjectOnOnDelete;
         }
@@ -83,8 +85,8 @@ namespace RAREGangplank.Gangplank.BarrelClasses
             if (!sender.IsMe && sender.Name == "Barrel")
             {
                 // deleting barrels that got destroyed
-                var id = ActiveBarrels.FindIndex(y => y.Data.NetworkId == sender.NetworkId);
-                ActiveBarrels.RemoveAt(id);
+                var id = activeBarrels.FindIndex(y => y.Data.NetworkId == sender.NetworkId);
+                activeBarrels.RemoveAt(id);
             }
         }
 
@@ -93,7 +95,7 @@ namespace RAREGangplank.Gangplank.BarrelClasses
             if (!sender.IsMe && sender.Name == "Barrel")
             {
                 // creats a new list entry with the data of the placed barrel.
-                ActiveBarrels.Add(new Barrel((Obj_AI_Base) sender));
+                activeBarrels.Add(new Barrel((Obj_AI_Base) sender));
             }
         }
 
