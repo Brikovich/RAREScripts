@@ -15,8 +15,15 @@ using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using LeagueSharp;
+using LeagueSharp.Common;
 using LeagueSharp.SDK;
 using LeagueSharp.SDK.UI;
+using Keys = LeagueSharp.Common.Keys;
+using KeyBindType = LeagueSharp.SDK.Enumerations.KeyBindType;
+using Menu = LeagueSharp.SDK.UI.Menu;
+using Spell = LeagueSharp.SDK.Spell;
+using TargetSelector = LeagueSharp.SDK.TargetSelector;
+using Version = System.Version;
 
 #endregion
 
@@ -133,6 +140,15 @@ namespace RAREZyra
             return subMenu.Add(new MenuSlider(name, display, cur, min, max));
         }
 
+        public static MenuKeyBind KeyBind(
+            this Menu subMenu,
+            string name,
+            string display,
+            System.Windows.Forms.Keys key,
+            KeyBindType type = KeyBindType.Press)
+        {
+            return subMenu.Add(new MenuKeyBind(name, display, key, type));
+        }
         #endregion
     }
 }

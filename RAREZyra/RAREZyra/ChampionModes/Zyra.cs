@@ -14,17 +14,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using LeagueSharp;
+using LeagueSharp.Common;
 using LeagueSharp.Data;
-using LeagueSharp.Data.DataTypes;
-using LeagueSharp.Data.Enumerations;
 using LeagueSharp.SDK;
 using LeagueSharp.SDK.Enumerations;
-using LeagueSharp.SDK.MoreLinq;
+using LeagueSharp.SDK.UI;
 using LeagueSharp.SDK.Utils;
 using RAREZyra.Properties;
 using SharpDX;
 using Color = System.Drawing.Color;
 using HitChance = LeagueSharp.SDK.Enumerations.HitChance;
+using KeyBindType = LeagueSharp.SDK.Enumerations.KeyBindType;
+using Keys = System.Windows.Forms.Keys;
 using Menu = LeagueSharp.SDK.UI.Menu;
 using Render = LeagueSharp.SDK.Utils.Render;
 using SkillshotType = LeagueSharp.SDK.Enumerations.SkillshotType;
@@ -40,9 +41,6 @@ namespace RAREZyra.ChampionModes
 
         #region Properties
         
-        private static Render.Sprite Button { get; set; }
-        private static bool ButtonGray { get; set; }
-        private static bool _buttonShown = true;
         public static readonly Render.Text Text = new Render.Text(
             0, 0, "", 12, new ColorBGRA(red: 255, green: 255, blue: 255, alpha: 255), "Verdana");
         
@@ -99,12 +97,6 @@ namespace RAREZyra.ChampionModes
             Utilities.E.MinHitChance = HitChance.Medium;
             Utilities.R.MinHitChance = HitChance.Medium;
             #endregion
-
-            /*Button = new Render.Sprite(LoadImg("PASSIVE"),
-                new Vector2((Drawing.Width/2) - 500, (Drawing.Height/2) - 350));
-            Button.Scale = new Vector2(0.8f, 0.8f);
-            Button.Add(0);
-            Button.OnDraw();*/
             
             // init the menu for karthus, maybe more champs soon.
             ChampionMenu();
@@ -112,7 +104,6 @@ namespace RAREZyra.ChampionModes
             Game.OnUpdate += Game_OnUpdate;
             // drawing event to draw something => lower refresh rate than game update.
             Drawing.OnDraw += Drawing_OnDraw;
-            //Obj_AI_Minion.OnCreate += Obj_AI_Minion_OnCreate;
         }
 
         /// <summary>
@@ -162,69 +153,9 @@ namespace RAREZyra.ChampionModes
             }
 
             #endregion
-            #region Kappa
-            /*if (Utilities.MainMenu["Draw"]["Warn"])
-            {
-
-                if (!_buttonShown)
-                {
-                    Button.Add(0);
-                    Button.Show();
-                    _buttonShown = true;
-                }
-
-                if (NavMesh.IsWallOfGrass(Utilities.Player.Position, 50))
-                {
-                    
-                    if (!ButtonGray)
-                    {
-                        Button.SetSaturation(0);
-                        ButtonGray = true;
-                    }
-
-                    Text.X = Button.X;
-                    Text.Y = Button.X;
-                    Text.TextString = "No new seeds.";
-                    Text.OnEndScene();
-                }
-                else
-                {
-                    
-                    if (ButtonGray)
-                    {
-                        Button.Reset();
-                        ButtonGray = false;
-                    }
-
-                    Text.X = Button.X;
-                    Text.Y = Button.X;
-                    Text.TextString = "";
-                    Text.OnEndScene();
-                }
-                
-            }
-            else
-            {
-                Button.Remove();
-                _buttonShown = false;
-            }*/
-            #endregion
+            
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="imgName">image name</param>
-        /// <returns>returns a bitmap to being draw</returns>
-        private static System.Drawing.Bitmap LoadImg(string imgName)
-        {
-            var bitmap = Resources.ResourceManager.GetObject(imgName) as System.Drawing.Bitmap;
-            if (bitmap == null)
-            {
-                Console.WriteLine(imgName + ".png not found.");
-            }
-            return bitmap;
-        }
 
         /// <summary>
         ///     Main ticking rotation which decides what method will be checked during the game.
@@ -232,6 +163,13 @@ namespace RAREZyra.ChampionModes
         /// <param name="args">parameter that are given by the process itself. (not needed yet)</param>
         private static void Game_OnUpdate(EventArgs args)
         {
+
+            Utilities.E.Range = Utilities.MainMenu["Utilities"]["ERange"];
+
+            if (Utilities.MainMenu["E"]["EFC"].GetValue<MenuKeyBind>().Active)
+            {
+                ForceESpell();
+            }
 
             if(Variables.Orbwalker.ActiveMode == OrbwalkingMode.LaneClear || Variables.Orbwalker.ActiveMode == OrbwalkingMode.LastHit)
                 Variables.Orbwalker.SetAttackState(Utilities.MainMenu["Utilities"]["AA"]);
@@ -251,6 +189,17 @@ namespace RAREZyra.ChampionModes
             
         }
 
+        public static void ForceESpell()
+        {
+            Variables.Orbwalker.Move(Game.CursorPos);
+            var target = Variables.TargetSelector.GetTarget(Utilities.E, false);
+
+            if (Utilities.E.IsReady() && target.IsValid())
+            {
+                Utilities.E.Cast(target);
+            }
+        }
+
         /// <summary>
         ///     spikes shot
         /// </summary>
@@ -266,7 +215,7 @@ namespace RAREZyra.ChampionModes
 
                 var farmloc = Core.GetBestQPos(minions);
 
-                if (farmloc.IsValid())
+                if (Extensions.IsValid(farmloc))
                 {
                     if(Utilities.W.IsReady()) HandleW(cMode, "Q", farmloc);
                         Utilities.Q.Cast(farmloc);
@@ -281,7 +230,7 @@ namespace RAREZyra.ChampionModes
 
                 var farmloc = Core.GetBestQPos(minions);
 
-                if (farmloc.IsValid())
+                if (Extensions.IsValid(farmloc))
                 {
                     Utilities.Q.Cast(farmloc);
                 }
@@ -296,7 +245,7 @@ namespace RAREZyra.ChampionModes
 
                 var loc = Core.GetBestQPos(null, heroes);
 
-                if (loc.IsValid())
+                if (Extensions.IsValid(loc))
                 {
                     if (Utilities.W.IsReady()) HandleW(Variables.Orbwalker.ActiveMode, "Q", loc);
                     Utilities.Q.Cast(loc);
@@ -318,11 +267,11 @@ namespace RAREZyra.ChampionModes
                 
                 var farmloc = Core.GetBestQPos(minions);
 
-                if (minions.Any() && farmloc.IsValid() && minions.Count >= 3)
+                if (minions.Any() && Extensions.IsValid(farmloc) && minions.Count >= 3)
                 {
                     Utilities.Q.Cast(farmloc);
                 }
-                else if(heroes.Any() && loc.IsValid())
+                else if(heroes.Any() && Extensions.IsValid(loc))
                 {
                     if (Utilities.W.IsReady() && Utilities.MainMenu["W"]["HybridW"]) HandleW(Variables.Orbwalker.ActiveMode, "Q", loc);
                         Utilities.Q.Cast(loc);
@@ -388,7 +337,7 @@ namespace RAREZyra.ChampionModes
 
                 var loc = Core.GetBestEPos(minions);
 
-                if (loc.IsValid() && minions.Any(x => !x.IsDead))
+                if (Extensions.IsValid(loc) && minions.Any(x => !x.IsDead))
                 {
                     Utilities.E.Cast(loc);
                 }
@@ -401,7 +350,7 @@ namespace RAREZyra.ChampionModes
 
                 var loc = Core.GetBestEPos(minions);
 
-                if (loc.IsValid() && minions.Any(x => !x.IsDead))
+                if (Extensions.IsValid(loc) && minions.Any(x => !x.IsDead))
                 {
                     Utilities.E.Cast(loc);
                 }
@@ -414,7 +363,7 @@ namespace RAREZyra.ChampionModes
 
                 var loc = Core.GetBestEPos(minions);
 
-                if (loc.IsValid() && minions.Any(x => !x.IsDead))
+                if (Extensions.IsValid(loc) && minions.Any(x => !x.IsDead))
                 {
                     Utilities.E.Cast(loc);
                 }
@@ -427,7 +376,7 @@ namespace RAREZyra.ChampionModes
 
                 var loc = Core.GetBestEPos(null, heroes);
 
-                if (loc.IsValid())
+                if (Extensions.IsValid(loc))
                 {
                     Utilities.E.Cast(loc);
                 }
@@ -442,7 +391,7 @@ namespace RAREZyra.ChampionModes
         {
             if (cMode == OrbwalkingMode.Combo && Utilities.MainMenu["R"]["ComboR"])
             {
-                var heroes = GameObjects.EnemyHeroes.Where(x => x.IsValidTarget(Utilities.R.Range)).ToList();
+                var heroes = GameObjects.EnemyHeroes.Where(x => Extensions.IsValidTarget(x, Utilities.R.Range)).ToList();
 
                 if (!heroes.Any()) return;
 
@@ -502,6 +451,8 @@ namespace RAREZyra.ChampionModes
                 eMenu.Slider("CountFarm", "minions to be casted", 3, 1, 5);
                 eMenu.Separator("LastHit");
                 eMenu.Bool("LastE", "Use E");
+                eMenu.Separator("Misc");
+                eMenu.KeyBind("EFC", "Force E cast", Keys.H);
             }
 
             var rMenu = Utilities.MainMenu.Add(new Menu("R", "R spell"));
@@ -515,6 +466,7 @@ namespace RAREZyra.ChampionModes
             var comboMenu = Utilities.MainMenu.Add(new Menu("Utilities", "Utilities"));
             {
                 comboMenu.Bool("AA", "Using AA in LastHit or LaneClear");
+                comboMenu.Slider("ERange", "Customize E Range", 980, 800, 1100);
             }
 
             var drawMenu = Utilities.MainMenu.Add(new Menu("Draw", "Draw"));
@@ -524,7 +476,6 @@ namespace RAREZyra.ChampionModes
                 drawMenu.Bool("E", "Draws E");
                 drawMenu.Bool("R", "Draws R");
                 drawMenu.Bool("Plants", "Draws Plants");
-                //drawMenu.Bool("Warn", "Warn no new seeds!"); // TODO drawing seed Fappa
             }
         }
         #endregion
@@ -595,7 +546,7 @@ namespace RAREZyra.ChampionModes
             {
                 var planties = new Dictionary<Obj_AI_Base, Zyra.Plant>();
 
-                foreach (var hero in h.Where(x => x.IsValidTarget(Utilities.Q.Range)))
+                foreach (var hero in h.Where(x => Extensions.IsValidTarget(x, Utilities.Q.Range)))
                 {
                     var temppred = Utilities.Q.GetPrediction(hero, true);
                     var count = temppred.AoeTargetsHitCount +
@@ -629,7 +580,7 @@ namespace RAREZyra.ChampionModes
 
             if (h != null)
             {
-                h = h.Where(x => x.IsValidTarget(Utilities.E.Range)).ToList();
+                h = h.Where(x => Extensions.IsValidTarget(x, Utilities.E.Range)).ToList();
                 if (!h.Any()) return new Vector2(0,0); // thanks media.
 
                 var temp = Utilities.E.GetPrediction(h.FirstOrDefault(), true);
@@ -654,7 +605,7 @@ namespace RAREZyra.ChampionModes
             {
                 var planties = new Dictionary<Obj_AI_Base, Zyra.Plant>();
 
-                foreach (var hero in h.Where(x => x.IsValidTarget(Utilities.R.Range)))
+                foreach (var hero in h.Where(x => Extensions.IsValidTarget(x, Utilities.R.Range)))
                 {
                     var temppred = Utilities.R.GetPrediction(hero, true);
                     if (temppred.AoeTargetsHitCount >= Utilities.MainMenu["R"]["Count"])
