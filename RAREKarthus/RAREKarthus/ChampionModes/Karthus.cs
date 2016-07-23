@@ -136,34 +136,34 @@ namespace RAREKarthus.ChampionModes
                 LaneClear();
             }
 
-            switch (Variables.Orbwalker.GetActiveMode())
+            switch (Variables.Orbwalker.ActiveMode)
             {
                 case OrbwalkingMode.Combo:
-                    Variables.Orbwalker.SetAttackState(Utilities.MainMenu["Modes"]["useaa"] ||
-                                                       ObjectManager.Player.Mana < 100);
+                    Variables.Orbwalker.AttackState = Utilities.MainMenu["Modes"]["useaa"] ||
+                                                       ObjectManager.Player.Mana < 100;
                     //if no mana, allow auto attacks!
-                    Variables.Orbwalker.SetMovementState(Utilities.MainMenu["Modes"]["usemm"]);
+                    Variables.Orbwalker.MovementState = Utilities.MainMenu["Modes"]["usemm"];
                     Combo();
                     break;
                 case OrbwalkingMode.Hybrid:
-                    Variables.Orbwalker.SetAttackState(true);
-                    Variables.Orbwalker.SetMovementState(Utilities.MainMenu["Modes"]["usemm"]);
+                    Variables.Orbwalker.AttackState = true;
+                    Variables.Orbwalker.MovementState = Utilities.MainMenu["Modes"]["usemm"];
                     Harass();
                     break;
                 case OrbwalkingMode.LaneClear:
-                    Variables.Orbwalker.SetAttackState(Utilities.MainMenu["Modes"]["useaa"] ||
-                                                       ObjectManager.Player.Mana < 100);
-                    Variables.Orbwalker.SetMovementState(Utilities.MainMenu["Modes"]["usemm"]);
+                    Variables.Orbwalker.AttackState = Utilities.MainMenu["Modes"]["useaa"] ||
+                                                       ObjectManager.Player.Mana < 100;
+                    Variables.Orbwalker.MovementState = Utilities.MainMenu["Modes"]["usemm"];
                     LaneClear();
                     break;
                 case OrbwalkingMode.LastHit:
-                    Variables.Orbwalker.SetAttackState(Utilities.MainMenu["Utilities"]["LastAA"]);
-                    Variables.Orbwalker.SetMovementState(Utilities.MainMenu["Modes"]["usemm"]);
+                    Variables.Orbwalker.AttackState = Utilities.MainMenu["Utilities"]["LastAA"];
+                    Variables.Orbwalker.MovementState = Utilities.MainMenu["Modes"]["usemm"];
                     LastHit();
                     break;
                 default:
-                    Variables.Orbwalker.SetAttackState(true);
-                    Variables.Orbwalker.SetMovementState(true);
+                    Variables.Orbwalker.AttackState = true;
+                    Variables.Orbwalker.MovementState = true;
                     EState(OrbwalkingMode.None);
                     break;
             }

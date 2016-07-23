@@ -172,7 +172,7 @@ namespace RAREZyra.ChampionModes
             }
 
             if(Variables.Orbwalker.ActiveMode == OrbwalkingMode.LaneClear || Variables.Orbwalker.ActiveMode == OrbwalkingMode.LastHit)
-                Variables.Orbwalker.SetAttackState(Utilities.MainMenu["Utilities"]["AA"]);
+                Variables.Orbwalker.AttackState = Utilities.MainMenu["Utilities"]["AA"]; 
 
             if (Utilities.Q.Level >= 1)
             {
