@@ -204,13 +204,13 @@ namespace RAREKarthus.ChampionModes
                     }
                     else
                     {
-                        if (Utilities.Player.HasBuff("KarthusDefile"))
+                        if (Utilities.Player.HasBuff("KarthusDefile") && Utilities.MainMenu["E"]["ToggleE"])
                             Utilities.E.Cast();
                     }
                     break;
 
                 default:
-                    if (Utilities.Player.HasBuff("KarthusDefile"))
+                    if (Utilities.Player.HasBuff("KarthusDefile") && Utilities.MainMenu["E"]["ToggleE"])
                         Utilities.E.Cast();
                     break;
             }
@@ -527,6 +527,8 @@ namespace RAREKarthus.ChampionModes
                 eMenu.Bool("HarassE", "Use E");
                 eMenu.Separator("Farm");
                 eMenu.Bool("FarmE", "Use E");
+                eMenu.Separator("Misc");
+                eMenu.Bool("ToggleE", "Auto Disable E");
             }
 
             var rMenu = Utilities.MainMenu.Add(new Menu("R", "R spell"));
